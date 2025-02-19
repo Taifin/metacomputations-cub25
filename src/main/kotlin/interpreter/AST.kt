@@ -6,6 +6,7 @@ enum class Builtins {
     CONS,
     HEAD,
     TAIL,
+    LIST,
     EQ,
 }
 
@@ -14,7 +15,6 @@ sealed interface Expr
 data class Id(val name: String) : Expr
 data class Constant(val value: Int) : Expr
 data class Literal(val value: String) : Expr
-data class ListExpr(val items: List<Expr>) : Expr
 data class Operation(val name: Builtins, val args: List<Expr>) : Expr
 
 data class Goto(val label: Id) : Jump

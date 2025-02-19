@@ -50,6 +50,10 @@ class Interpreter(private val program: Program) {
                 val rhs = evaluatedArgs[1]
                 return lhs == rhs
             }
+
+            Builtins.LIST -> {
+                return evaluatedArgs
+            }
         }
     }
 
@@ -65,7 +69,6 @@ class Interpreter(private val program: Program) {
 
             is Literal -> expr.value
             is Operation -> evalOp(expr)
-            is ListExpr -> expr.items.map { evalExpr(it) }
         }
     }
 

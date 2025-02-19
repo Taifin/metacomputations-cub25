@@ -15,6 +15,7 @@ abstract class ExprGrammar<T> : Grammar<T>() {
     protected val opName by literalToken("head") or
             literalToken("tail") or
             literalToken("cons") or
+            literalToken("list") or
             literalToken("eq") map {
         enumValueOf<Builtins>(it.text.uppercase())
     }
@@ -27,21 +28,13 @@ abstract class ExprGrammar<T> : Grammar<T>() {
         Operation(name, args)
     }
 
-    private val list by parser {
-        listToken()
-        lBracket()
-        val inputs = separated(expr, comma)()
-        rBracket()
-        ListExpr(inputs)
-    }
-
     protected val comma by literalToken(",")
     protected val lBracket by literalToken("(")
     protected val rBracket by literalToken(")")
     protected val identifier by regexToken("\\w+") map { Id(it.text) }
 
     // todo forbid identifier as input
-    protected val expr: Parser<Expr> by constant or op or list or stringLiteral or identifier
+    protected val expr: Parser<Expr> by constant or op or stringLiteral or identifier
 }
 
 class FlowChartGrammar : ExprGrammar<Program>() {
