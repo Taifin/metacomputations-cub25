@@ -4,32 +4,22 @@ import me.alllex.parsus.parser.*
 import me.alllex.parsus.token.literalToken
 import me.alllex.parsus.token.regexToken
 
-class FlowChartGrammar : Grammar<Program>() {
-    init {
-        regexToken("\\s", ignored = true)
-    }
-
-    private val readToken by literalToken("read")
-    private val lBracket by literalToken("(")
-    private val rBracket by literalToken(")")
-    private val comma by literalToken(",")
-    private val semicolon by literalToken(";")
-
-    private val identifier by regexToken("\\w+") map { Id(it.text) }
-    private val identifiersList by separated(identifier, comma)
-
-    private val read by -readToken * -lBracket * identifiersList * -rBracket * -semicolon map {
-        Read(it)
-    }
+abstract class ExprGrammar<T> : Grammar<T>() {
 
     private val stringLiteral by regexToken("\"[a-zA-Z]+\"") map { Literal(it.text.trim('\"')) }
 
     private val constant by regexToken("-?\\d+") map { Constant(it.text.toInt()) }
-    private val opName by literalToken("hd") or literalToken("tl") or literalToken("cons") or literalToken("eq") map {
-        it.text
+
+    private val listToken by literalToken("list")
+
+    protected val opName by literalToken("head") or
+            literalToken("tail") or
+            literalToken("cons") or
+            literalToken("eq") map {
+        enumValueOf<Builtins>(it.text.uppercase())
     }
 
-    private val op by parser {
+    protected val op by parser {
         val name = opName()
         lBracket()
         val args = separated(expr, comma)()
@@ -37,7 +27,38 @@ class FlowChartGrammar : Grammar<Program>() {
         Operation(name, args)
     }
 
-    private val expr: Parser<Expr> by stringLiteral or constant or op or identifier
+    private val list by parser {
+        listToken()
+        lBracket()
+        val inputs = separated(expr, comma)()
+        rBracket()
+        ListExpr(inputs)
+    }
+
+    protected val comma by literalToken(",")
+    protected val lBracket by literalToken("(")
+    protected val rBracket by literalToken(")")
+    protected val identifier by regexToken("\\w+") map { Id(it.text) }
+
+    // todo forbid identifier as input
+    protected val expr: Parser<Expr> by constant or op or list or stringLiteral or identifier
+}
+
+class FlowChartGrammar : ExprGrammar<Program>() {
+    init {
+        regexToken("\\s", ignored = true)
+    }
+
+    private val readToken by literalToken("read")
+
+    private val semicolon by literalToken(";")
+
+    private val identifiersList by separated(identifier, comma)
+
+    private val read by -readToken * -lBracket * identifiersList * -rBracket * -semicolon map {
+        Read(it)
+    }
+
 
     private val gotoStatement by -literalToken("goto") * identifier * -semicolon map {
         Goto(it)
