@@ -10,13 +10,17 @@ repositories {
 }
 
 dependencies {
-    testImplementation(kotlin("test"))
+    testImplementation("org.testng:testng:7.4.0")
+    testImplementation("org.assertj:assertj-core:3.25.1")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+
     implementation("me.alllex.parsus:parsus-jvm:0.6.1")
 }
 
-tasks.test {
-    useJUnitPlatform()
+tasks.named<Test>("test") {
+    useTestNG()
 }
+
 kotlin {
     jvmToolchain(8)
 }
