@@ -32,7 +32,7 @@ class Interpreter(private val program: Program) {
             Builtins.CONS -> {
                 val list = evaluatedArgs[1] as? List<Any>
                 val head = evaluatedArgs[0]
-                return listOf(head, list)
+                return mutableListOf(head).also { it.addAll(list!!) }
             }
 
             Builtins.HEAD -> {
@@ -41,8 +41,11 @@ class Interpreter(private val program: Program) {
             }
 
             Builtins.TAIL -> {
-                val list = evaluatedArgs[0] as? List<Any>
-                return list!!.drop(1)
+                val list = evaluatedArgs[0] as List<Any>
+                if (list.isEmpty()) {
+                    return list
+                }
+                return list.drop(1)
             }
 
             Builtins.EQ -> {
@@ -53,6 +56,20 @@ class Interpreter(private val program: Program) {
 
             Builtins.LIST -> {
                 return evaluatedArgs
+            }
+
+            Builtins.FIRSTSYM -> {
+                val list = evaluatedArgs[0] as List<Any>
+                if (list.isEmpty()) {
+                    return "B"
+                }
+                return list.first()
+            }
+            Builtins.NEWTAIL -> {
+                val label = evaluatedArgs[0] as String
+                val labelAsIndex = label.toInt()
+                val q = evaluatedArgs[1] as List<Any>
+                return q.drop(labelAsIndex)
             }
         }
     }

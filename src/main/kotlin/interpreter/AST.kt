@@ -8,6 +8,8 @@ enum class Builtins {
     TAIL,
     LIST,
     EQ,
+    FIRSTSYM,
+    NEWTAIL
 }
 
 sealed interface Expr

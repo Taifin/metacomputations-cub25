@@ -6,7 +6,7 @@ import me.alllex.parsus.token.regexToken
 
 abstract class ExprGrammar<T> : Grammar<T>() {
 
-    private val stringLiteral by regexToken("\"[a-zA-Z]+\"") map { Literal(it.text.trim('\"')) }
+    private val stringLiteral by regexToken("\"[^\".]+\"") map { Literal(it.text.trim('\"')) }
 
     private val constant by regexToken("-?\\d+") map { Constant(it.text.toInt()) }
 
@@ -16,7 +16,9 @@ abstract class ExprGrammar<T> : Grammar<T>() {
             literalToken("tail") or
             literalToken("cons") or
             literalToken("list") or
-            literalToken("eq") map {
+            literalToken("eq") or
+            literalToken("firstsym") or
+            literalToken("newtail") map {
         enumValueOf<Builtins>(it.text.uppercase())
     }
 
