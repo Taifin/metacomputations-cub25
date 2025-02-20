@@ -3,11 +3,15 @@ import interpreter.Interpreter
 import me.alllex.parsus.parser.getOrThrow
 import org.assertj.core.api.Assertions.assertThat
 import org.testng.annotations.Test
+import java.nio.file.Paths
+import kotlin.io.path.readText
 import kotlin.test.AfterTest
 
 @Test
 class InterpretationTest {
     private val stdin = System.`in`
+    private val tmDir = Paths.get("src/test/resources/tm")
+    private val tmInterpreter = "turing-machine-int.fchart"
 
     @AfterTest
     fun tearDown() {
@@ -38,5 +42,17 @@ class InterpretationTest {
         val interpreter = Interpreter(program)
 
         assertThat(interpreter.run()).isEqualTo(1000)
+    }
+
+    @Test
+    fun `turing machine interpreter on trivial example`() {
+        val grammar = FlowChartGrammar()
+        val res = grammar.parse(tmDir.resolve(tmInterpreter).readText()).getOrThrow()
+
+        val stream = tmDir.resolve("01-example.inp").readText()
+        System.setIn(stream.byteInputStream())
+        val interpreter = Interpreter(res)
+
+        assertThat(interpreter.run()).isEqualTo(listOf("1", "1", "0", "1"))
     }
 }
