@@ -112,7 +112,7 @@ class Interpreter(private val program: Program) {
                 if (list.isEmpty()) {
                     return list
                 }
-                return list.drop(1)
+                return list.drop(1).toMutableList()
             }
 
             Builtins.EQ -> {
@@ -159,7 +159,7 @@ class Interpreter(private val program: Program) {
 
             Builtins.ISSTATIC -> {
                 val arg = evaluatedArgs[0] as Expr
-                val division = evaluatedArgs[1] as List<String> // TODO
+                val division = evaluatedArgs[1] as List<String>
                 return isStatic(arg, division)
             }
 
@@ -202,7 +202,7 @@ class Interpreter(private val program: Program) {
             Builtins.SETDIFF -> {
                 val pair = evaluatedArgs[0] as List<Any>
                 val set = evaluatedArgs[0] as List<Any>
-                return if (pair !in set) pair else emptyList()
+                return if (pair !in set) pair else mutableListOf()
             }
 
             Builtins.TOLIST -> {
@@ -237,7 +237,7 @@ class Interpreter(private val program: Program) {
             is Constant -> expr.value
             is Id -> {
                 if (!variables.contains(expr.name)) {
-                    variables[expr.name] = emptyList<Any>()
+                    variables[expr.name] = mutableListOf<Any>()
                 }
                 variables[expr.name]!!
             }
