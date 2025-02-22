@@ -15,10 +15,20 @@ abstract class ExprGrammar<T> : Grammar<T>() {
     protected val opName by literalToken("head") or
             literalToken("tail") or
             literalToken("cons") or
+            literalToken("toList") or
             literalToken("list") or
+            literalToken("map") or
             literalToken("eq") or
             literalToken("firstsym") or
-            literalToken("newtail") map {
+            literalToken("newtail") or
+            literalToken("lookup") or
+            literalToken("initialCode") or
+            literalToken("isStatic") or
+            literalToken("reduce") or
+            literalToken("eval") or
+            literalToken("setdiff") or
+            literalToken("appendCode") or
+            literalToken("append") map {
         enumValueOf<Builtins>(it.text.uppercase())
     }
 

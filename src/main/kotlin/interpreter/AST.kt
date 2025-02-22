@@ -7,25 +7,51 @@ enum class Builtins {
     HEAD,
     TAIL,
     LIST,
+    MAP,
     EQ,
     FIRSTSYM,
-    NEWTAIL
+    NEWTAIL,
+    LOOKUP,
+    INITIALCODE,
+    ISSTATIC,
+    REDUCE,
+    EVAL,
+    SETDIFF,
+    TOLIST,
+    APPEND,
+    APPENDCODE,
 }
 
 sealed interface Expr
 
-data class Id(val name: String) : Expr
-data class Constant(val value: Int) : Expr
-data class Literal(val value: String) : Expr
-data class Operation(val name: Builtins, val args: List<Expr>) : Expr
+data class Id(val name: String) : Expr {
+    override fun toString() = name
+}
+data class Constant(val value: Int) : Expr {
+    override fun toString() = value.toString()
+}
+data class Literal(val value: String) : Expr {
+    override fun toString() = "\"$value\""
+}
+data class Operation(val name: Builtins, val args: List<Expr>) : Expr {
+    override fun toString() = "${name.toString().lowercase()}(${args.joinToString(",")})"
+}
 
-data class Goto(val label: Id) : Jump
-data class IfElse(val cond: Expr, val trueBranch: Id, val falseBranch: Id) : Jump
-data class Return(val expr: Expr) : Jump
+data class Goto(val label: Id) : Jump {
+    override fun toString() = "goto $label;"
+}
+data class IfElse(val cond: Expr, val trueBranch: Id, val falseBranch: Id) : Jump {
+    override fun toString() = "if $cond goto $trueBranch else $falseBranch;"
+}
+data class Return(val expr: Expr) : Jump {
+    override fun toString() = "return $expr;"
+}
 
 sealed interface Jump
 
-data class Assignment(val variable: Id, val value: Expr)
+data class Assignment(val variable: Id, val value: Expr) {
+    override fun toString() = "$variable := $value"
+}
 
 data class BasicBlock(val label: Id, val assignments: List<Assignment>?, val jump: Jump)
 

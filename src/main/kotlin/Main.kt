@@ -1,4 +1,3 @@
-import me.alllex.parsus.parser.getOrThrow
 import interpreter.FlowChartGrammar
 import interpreter.Interpreter
 import me.alllex.parsus.annotations.ExperimentalParsusApi
