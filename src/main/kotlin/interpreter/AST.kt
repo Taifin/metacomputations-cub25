@@ -11,6 +11,7 @@ enum class Builtins {
     EQ,
     FIRSTSYM,
     NEWTAIL,
+    LOOKUPLABEL,
     LOOKUP,
     INITIALCODE,
     ISSTATIC,

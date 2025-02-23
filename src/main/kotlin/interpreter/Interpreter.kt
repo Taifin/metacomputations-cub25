@@ -14,6 +14,10 @@ class Interpreter(private val program: Program) {
     }
     private val fchartParser = FlowChartGrammar()
 
+    private var labInd = 0
+    private fun generateLabel(): String = "lab${labInd++}"
+    private val stateToLab = mutableMapOf<Pair<String, String>, String>()
+
     @OptIn(ExperimentalParsusApi::class)
     private fun readVars() {
         for (id in program.read.ids) {
@@ -93,6 +97,26 @@ class Interpreter(private val program: Program) {
         }
     }
 
+    private fun reduce(exp: Expr, vars: MutableMap<String, Any>) : Any {
+        when (exp) {
+            is Constant -> return exp.value
+            is Id -> {
+                if (vars.containsKey(exp.name)) {
+                    return vars[exp.name]!!
+                }
+                return exp
+            }
+            is Literal -> return exp.value
+            is Operation -> {
+                return if (exp.args.all { isStatic(it, vars.keys.toList()) }) {
+                    evalExpr(exp, vars)
+                } else {
+                    exp
+                }
+            }
+        }
+    }
+
     private fun evalOp(op: Operation, vars: MutableMap<String, Any>): Any {
         val evaluatedArgs = op.args.map { evalExpr(it, vars) }
         when (op.name) {
@@ -154,7 +178,14 @@ class Interpreter(private val program: Program) {
             Builtins.INITIALCODE -> {
                 val pp = evaluatedArgs[0] as Id
                 val vs = evaluatedArgs[1]
-                return mutableListOf("(${pp.name}, $vs):")
+                val key = pp.toString() to vs.toString()
+                if (!stateToLab.containsKey(key)) {
+                    val label = generateLabel()
+                    stateToLab[key] = label
+                    return mutableListOf("$label:")
+                } else {
+                    return mutableListOf("${stateToLab[key]!!}:")
+                }
             }
 
             Builtins.ISSTATIC -> {
@@ -164,8 +195,8 @@ class Interpreter(private val program: Program) {
             }
 
             Builtins.REDUCE -> {
-                // TODO
-                return evaluatedArgs[0]
+                val exp = evaluatedArgs[0] as Expr
+                return reduce(exp, vars)
             }
 
             Builtins.APPEND -> {
@@ -174,6 +205,7 @@ class Interpreter(private val program: Program) {
                 when(collection) {
                     is List<*> -> {
                         collection as MutableList<Any>
+                        if (elem is List<*> && elem.isEmpty()) return collection // TODO
                         collection.add(elem)
                     }
                     is Map<*, *> -> {
@@ -189,8 +221,11 @@ class Interpreter(private val program: Program) {
             Builtins.APPENDCODE -> {
                 val code = evaluatedArgs[0] as MutableList<Any>
                 val new = evaluatedArgs[1] as String
-                // TODO generic interpolation
-                return code.also { it.add(new.replace("\$reduced", vars["reduced"]!!.toString()).replace("\$x", vars["x"]!!.toString())) }
+                val replaced = new.replace(Regex("\\{(\\w+)}")) {
+                    val key = it.groupValues[1]
+                    vars[key]?.toString() ?: it.value
+                }
+                return code.also { it.add(replaced) }
             }
 
             Builtins.EVAL -> {
@@ -201,7 +236,7 @@ class Interpreter(private val program: Program) {
 
             Builtins.SETDIFF -> {
                 val pair = evaluatedArgs[0] as List<Any>
-                val set = evaluatedArgs[0] as List<Any>
+                val set = evaluatedArgs[1] as List<Any>
                 return if (pair !in set) pair else mutableListOf()
             }
 
@@ -217,6 +252,16 @@ class Interpreter(private val program: Program) {
                 }
                 return args
             }
+
+            Builtins.LOOKUPLABEL -> {
+                val pp = evaluatedArgs[0]
+                val vs = evaluatedArgs[1]
+                val key = pp.toString() to vs.toString()
+                if (!stateToLab.containsKey(key)) {
+                    stateToLab[key] = generateLabel()
+                }
+                return stateToLab[pp.toString() to vs.toString()]!!
+            }
         }
     }
 
@@ -224,7 +269,12 @@ class Interpreter(private val program: Program) {
         return when (exp) {
             is Constant -> exp.value
             is Id -> {
-                vs[exp.name] ?: throw IllegalArgumentException("Given ID is not static by division")
+                val value = vs[exp.name] ?: throw IllegalArgumentException("Given ID is not static by division")
+                if (value is MutableMap<*, *>) {
+                    return value.toMutableMap() // explicit copy for vs in mix
+                } else {
+                    return value
+                }
             }
 
             is Literal -> exp.value
@@ -239,7 +289,12 @@ class Interpreter(private val program: Program) {
                 if (!variables.contains(expr.name)) {
                     variables[expr.name] = mutableListOf<Any>()
                 }
-                variables[expr.name]!!
+                val value = variables[expr.name]!!
+                if (value is MutableMap<*, *>) {
+                    return value.toMutableMap() // explicit copy for vs in mix
+                } else {
+                    return value
+                }
             }
 
             is Literal -> expr.value

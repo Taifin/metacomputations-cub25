@@ -21,6 +21,7 @@ abstract class ExprGrammar<T> : Grammar<T>() {
             literalToken("eq") or
             literalToken("firstsym") or
             literalToken("newtail") or
+            literalToken("lookupLabel") or
             literalToken("lookup") or
             literalToken("initialCode") or
             literalToken("isStatic") or
