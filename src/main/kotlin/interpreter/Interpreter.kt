@@ -97,7 +97,7 @@ class Interpreter(private val program: Program) {
         }
     }
 
-    private fun reduce(exp: Expr, vars: MutableMap<String, Any>) : Any {
+    private fun reduce(exp: Expr, vars: MutableMap<String, Any>): Any {
         when (exp) {
             is Constant -> return exp.value
             is Id -> {
@@ -106,6 +106,7 @@ class Interpreter(private val program: Program) {
                 }
                 return exp
             }
+
             is Literal -> return exp.value
             is Operation -> {
                 return if (exp.args.all { isStatic(it, vars.keys.toList()) }) {
@@ -182,10 +183,8 @@ class Interpreter(private val program: Program) {
                 if (!stateToLab.containsKey(key)) {
                     val label = generateLabel()
                     stateToLab[key] = label
-                    return mutableListOf("$label:")
-                } else {
-                    return mutableListOf("${stateToLab[key]!!}:")
                 }
+                return mutableListOf("${stateToLab[key]!!}:")
             }
 
             Builtins.ISSTATIC -> {
@@ -202,17 +201,20 @@ class Interpreter(private val program: Program) {
             Builtins.APPEND -> {
                 val collection = evaluatedArgs[0]
                 val elem = evaluatedArgs[1]
-                when(collection) {
+                when (collection) {
                     is List<*> -> {
                         collection as MutableList<Any>
-                        if (elem is List<*> && elem.isEmpty()) return collection // TODO
+                        if (elem is List<*> && elem.isEmpty()) return collection
+                        // TODO: this is to avoid adding empty list after setdiff
                         collection.add(elem)
                     }
+
                     is Map<*, *> -> {
                         collection as MutableMap<String, Any>
                         elem as List<Any>
                         collection[(elem[0] as Id).name] = elem[1]
                     }
+
                     else -> throw IllegalArgumentException("Argument is not a collection: $collection")
                 }
                 return collection
@@ -246,9 +248,8 @@ class Interpreter(private val program: Program) {
 
             Builtins.MAP -> {
                 val args = evaluatedArgs.associate {
-                    with(it as List<Any>) {
-                        it[0] to it[1]
-                    }
+                    it as List<Any>
+                    it[0] to it[1]
                 }
                 return args
             }
