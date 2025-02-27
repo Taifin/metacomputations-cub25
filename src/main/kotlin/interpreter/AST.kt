@@ -23,6 +23,7 @@ enum class Builtins {
     TOLIST,
     APPEND,
     APPENDCODE,
+    PARSE,
 }
 
 sealed interface Expr

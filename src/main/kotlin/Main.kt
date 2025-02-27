@@ -1,5 +1,6 @@
 import interpreter.FlowChartGrammar
 import interpreter.Interpreter
+import interpreter.Log
 import me.alllex.parsus.annotations.ExperimentalParsusApi
 import me.alllex.parsus.parser.getOrElse
 import java.nio.file.Paths
@@ -12,6 +13,10 @@ fun main(args: Array<String>) {
     if (programFile.notExists()) {
         println("Input file does not exist!")
         return
+    }
+
+    if (args.size >= 2 && args[1] == "--debug") {
+        Log.enabled = true
     }
 
     val program = programFile.readText()

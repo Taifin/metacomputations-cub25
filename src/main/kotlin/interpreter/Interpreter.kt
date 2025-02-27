@@ -3,8 +3,17 @@ package interpreter
 import me.alllex.parsus.annotations.ExperimentalParsusApi
 import me.alllex.parsus.parser.*
 import java.nio.file.Paths
+import java.time.LocalDateTime
 import kotlin.io.path.notExists
 import kotlin.io.path.readText
+
+object Log {
+    var enabled = false
+
+    fun log(str: String) {
+        if (enabled) System.err.println("[DEBUG ${LocalDateTime.now()}]: $str")
+    }
+}
 
 class Interpreter(private val program: Program) {
     private val vars = mutableMapOf<String, Any>()
@@ -22,33 +31,15 @@ class Interpreter(private val program: Program) {
     private fun readVars() {
         for (id in program.read.ids) {
             val inp = readlnOrNull() ?: throw IllegalArgumentException("Unable to read input: EOF reached")
-            val mode = inp.first()
-            val input = inp.drop(1)
-            if (mode == '$') { // flowchart program
-                val file = Paths.get(input)
-                if (file.notExists()) {
-                    throw IllegalArgumentException("Non existing file passed as an input!")
-                }
-                val parsed = fchartParser.parseTracingTokenMatching(file.readText())
-                val result = parsed.result.getOrElse {
-                    throw IllegalArgumentException(
-                        "Unable to read input: incorrect format\n${
-                            parsed.trace.events.joinToString("\n")
-                        }"
-                    )
-                }
-                vars[id.name] = result
-            } else {
-                val parsed = exprParser.parseTracingTokenMatching(inp)
-                val result = parsed.result.getOrElse {
-                    throw IllegalArgumentException(
-                        "Unable to read input: incorrect format\n${
-                            parsed.trace.events.joinToString("\n")
-                        }"
-                    )
-                }
-                vars[id.name] = evalExpr(result, vars)
+            val parsed = exprParser.parseTracingTokenMatching(inp)
+            val result = parsed.result.getOrElse {
+                throw IllegalArgumentException(
+                    "Unable to read input: incorrect format\n${
+                        parsed.trace.events.joinToString("\n")
+                    }"
+                )
             }
+            vars[id.name] = evalExpr(result, vars)
         }
     }
 
@@ -103,7 +94,10 @@ class Interpreter(private val program: Program) {
             is String -> Literal(value)
             is Expr -> value
             is List<*> -> Operation(Builtins.LIST, value.map { toExpr(it!!) })
-            is Map<*, *> -> Operation(Builtins.MAP, value.entries.map { Operation(Builtins.LIST, listOf(toExpr(it.key!!), toExpr(it.value!!))) })
+            is Map<*, *> -> Operation(
+                Builtins.MAP,
+                value.entries.map { Operation(Builtins.LIST, listOf(toExpr(it.key!!), toExpr(it.value!!))) })
+
             else -> throw IllegalArgumentException("Value cannot be converted to expression: $value")
         }
     }
@@ -129,6 +123,7 @@ class Interpreter(private val program: Program) {
         }
     }
 
+    @OptIn(ExperimentalParsusApi::class)
     private fun evalOp(op: Operation, vars: MutableMap<String, Any>): Any {
         val evaluatedArgs = op.args.map { evalExpr(it, vars) }
         when (op.name) {
@@ -275,6 +270,19 @@ class Interpreter(private val program: Program) {
                 }
                 return stateToLab[pp.toString() to vs.toString()]!!
             }
+
+            Builtins.PARSE -> {
+                val filename = evaluatedArgs[0] as String
+                val parsed = fchartParser.parseTracingTokenMatching(Paths.get(filename).readText())
+                val result = parsed.result.getOrElse {
+                    throw IllegalArgumentException(
+                        "Unable to parse: incorrect format\n${
+                            parsed.trace.events.joinToString("\n")
+                        }"
+                    )
+                }
+                return result
+            }
         }
     }
 
@@ -316,6 +324,7 @@ class Interpreter(private val program: Program) {
     }
 
     private fun evalJump(jump: Jump): Id {
+        Log.log("Evaluating jump: $jump")
         return when (jump) {
             is Goto -> jump.label
             is IfElse -> {
@@ -330,10 +339,12 @@ class Interpreter(private val program: Program) {
     }
 
     private fun runBlock(basicBlock: BasicBlock): Id {
-        if (basicBlock.assignments != null)
+        if (basicBlock.assignments != null) {
             for (assignment in basicBlock.assignments) {
+                Log.log("Processing assignment: $assignment")
                 vars[assignment.variable.name] = evalExpr(assignment.value, vars)
             }
+        }
         return evalJump(basicBlock.jump)
     }
 
@@ -342,6 +353,7 @@ class Interpreter(private val program: Program) {
         resolveLabels()
         var currentLabel = program.basicBlocks.first().label
         while (true) {
+            Log.log("At label $currentLabel")
             val currentBlock = blocks[currentLabel]!!
             val newLabel = runBlock(currentBlock)
 

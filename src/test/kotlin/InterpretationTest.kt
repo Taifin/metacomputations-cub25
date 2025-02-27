@@ -62,7 +62,7 @@ class InterpretationTest {
         val grammar = FlowChartGrammar()
         val res = grammar.parse(mix.readText()).getOrThrow()
 
-        val stream = "\$fchart/turing-machine/turing-machine-int.fchart\n" +
+        val stream = "parse(\"fchart/turing-machine/turing-machine-int.fchart\")\n" +
                 "list(\"Q\",\"Qtail\",\"Instruction\",\"Operator\",\"Symbol\",\"Nextlabel\")\n" +
                 "map(list(\"Q\",list(list(\"if\",\"0\",\"goto\",\"3\"),list(\"right\"),list(\"goto\",\"0\"),list(\"write\",\"1\"))))"
         System.setIn(stream.byteInputStream())
