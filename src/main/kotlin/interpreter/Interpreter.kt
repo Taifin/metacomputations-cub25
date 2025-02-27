@@ -97,22 +97,33 @@ class Interpreter(private val program: Program) {
         }
     }
 
-    private fun reduce(exp: Expr, vars: MutableMap<String, Any>): Any {
+    private fun toExpr(value: Any): Expr {
+        return when (value) {
+            is Int -> Constant(value)
+            is String -> Literal(value)
+            is Expr -> value
+            is List<*> -> Operation(Builtins.LIST, value.map { toExpr(it!!) })
+            is Map<*, *> -> Operation(Builtins.MAP, value.entries.map { Operation(Builtins.LIST, listOf(toExpr(it.key!!), toExpr(it.value!!))) })
+            else -> throw IllegalArgumentException("Value cannot be converted to expression: $value")
+        }
+    }
+
+    private fun reduce(exp: Expr, vars: MutableMap<String, Any>): Expr {
         when (exp) {
-            is Constant -> return exp.value
+            is Constant -> return exp
             is Id -> {
                 if (vars.containsKey(exp.name)) {
-                    return vars[exp.name]!!
+                    return toExpr(vars[exp.name]!!)
                 }
                 return exp
             }
 
-            is Literal -> return exp.value
+            is Literal -> return exp
             is Operation -> {
                 return if (exp.args.all { isStatic(it, vars.keys.toList()) }) {
-                    evalExpr(exp, vars)
+                    toExpr(evalExpr(exp, vars))
                 } else {
-                    exp
+                    Operation(exp.name, exp.args.map { reduce(it, vars) })
                 }
             }
         }
@@ -195,7 +206,8 @@ class Interpreter(private val program: Program) {
 
             Builtins.REDUCE -> {
                 val exp = evaluatedArgs[0] as Expr
-                return reduce(exp, vars)
+                val variables = evaluatedArgs[1] as MutableMap<String, Any>
+                return reduce(exp, variables)
             }
 
             Builtins.APPEND -> {

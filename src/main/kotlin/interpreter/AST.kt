@@ -1,6 +1,8 @@
 package interpreter
 
-data class Read(val ids: List<Id>)
+sealed interface AstElement
+
+data class Read(val ids: List<Id>) : AstElement
 
 enum class Builtins {
     CONS,
