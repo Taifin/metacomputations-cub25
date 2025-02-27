@@ -81,7 +81,7 @@ class Interpreter(private val program: Program) {
             }
 
             is Program -> {
-                mutableListOf<Any>(arg.read).also { it.addAll(arg.basicBlocks.map { it.label }) }
+                arg.basicBlocks.map { listOf(it.label, toList(it)) }.toMutableList()
             }
 
             else -> throw IllegalArgumentException("Cannot be converted to list: $arg")
