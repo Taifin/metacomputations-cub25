@@ -73,7 +73,7 @@ hReturn:    exp      := head(command);
             code     := appendCode(code, "return {reduced};");
             goto inner;
 
-cont2:      residual := append(residual, code);
+cont2:      residual := append(residual, setdiff(code, residual));
             goto beforeLook;
 allPP:      goto outer;
 cont1:      return residual;

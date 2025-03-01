@@ -68,12 +68,12 @@ class FlowChartGrammar : ExprGrammar<Program>() {
 
 
     private val gotoStatement by -literalToken("goto") * identifier * -semicolon map {
-        Goto(it)
+        Goto(Label(it))
     }
 
     private val ifElseStatement by -literalToken("if") * expr * -literalToken("goto") * identifier *
             -literalToken("else") * identifier * -semicolon map {
-        IfElse(it.t1, it.t2, it.t3)
+        IfElse(it.t1, Label(it.t2), Label(it.t3))
     }
 
     private val returnStatement by -literalToken("return") * expr * -semicolon map {
@@ -87,7 +87,7 @@ class FlowChartGrammar : ExprGrammar<Program>() {
     }
 
     private val basicBlock by identifier * -literalToken(":") * optional(repeated(assignment, 0)) * jump map {
-        BasicBlock(it.t1, it.t2, it.t3)
+        BasicBlock(Label(it.t1), it.t2, it.t3)
     }
 
     override val root: Parser<Program> by read * repeated(basicBlock, 1) map {

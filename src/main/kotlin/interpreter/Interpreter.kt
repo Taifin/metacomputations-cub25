@@ -16,7 +16,7 @@ object Log {
 
 class Interpreter(private val program: Program) {
     private val vars = mutableMapOf<String, Any>()
-    private val blocks = mutableMapOf<Id, BasicBlock>()
+    private val blocks = mutableMapOf<Label, BasicBlock>()
     private val exprParser = object : ExprGrammar<Expr>() {
         override val root: Parser<Expr> by expr
     }
@@ -93,7 +93,9 @@ class Interpreter(private val program: Program) {
         val exp = when (value) {
             is Int -> Constant(value)
             is String -> Literal(value)
+            is Id -> Literal(value.name)
             is Expr -> value
+            is Label -> Literal(value.name)
             is List<*> -> Operation(Builtins.LIST, value.map { toExpr(it!!) })
             is Map<*, *> -> Operation(
                 Builtins.MAP,
@@ -116,22 +118,21 @@ class Interpreter(private val program: Program) {
                 }
             }
 
-            is Literal -> exp.value
+            is Literal -> {
+                return vs[exp.value] ?: throw IllegalArgumentException("Given ID $exp is not static by division")
+            }
             is Operation -> evalOp(exp, vs)
         }
     }
 
     private fun reduce(exp: Expr, vars: MutableMap<String, Any>): Expr {
         when (exp) {
-            is Constant -> return exp
             is Id -> {
                 if (vars.containsKey(exp.name)) {
                     return toExpr(vars[exp.name]!!)
                 }
                 return exp
             }
-
-            is Literal -> return exp
             is Operation -> {
                 return if (exp.args.all { isStatic(it, vars.keys.toList()) }) {
                     toExpr(evalExpr(exp, vars))
@@ -139,11 +140,22 @@ class Interpreter(private val program: Program) {
                     Operation(exp.name, exp.args.map { reduce(it, vars) })
                 }
             }
+            else -> return exp
         }
     }
 
     @OptIn(ExperimentalParsusApi::class)
     private fun evalOp(op: Operation, vars: MutableMap<String, Any>): Any {
+        if (op.name == Builtins.EVAL) {
+            val evalVars = vars[(op.args[1] as Id).name]!! as MutableMap<String, Any>
+            return eval(op.args[0], evalVars)
+        }
+
+        if (op.name == Builtins.REDUCE) {
+            val reduceVars = vars[(op.args[1] as Id).name]!! as MutableMap<String, Any>
+            return reduce(op.args[0], reduceVars)
+        }
+
         val evaluatedArgs = op.args.map { evalExpr(it, vars) }
         when (op.name) {
             Builtins.CONS -> {
@@ -202,7 +214,7 @@ class Interpreter(private val program: Program) {
             }
 
             Builtins.INITIALCODE -> {
-                val pp = evaluatedArgs[0] as Id
+                val pp = evaluatedArgs[0]
                 val vs = evaluatedArgs[1]
                 val key = pp.toString() to vs.toString()
                 if (!stateToLab.containsKey(key)) {
@@ -238,7 +250,10 @@ class Interpreter(private val program: Program) {
                     is Map<*, *> -> {
                         collection as MutableMap<String, Any>
                         elem as List<Any>
-                        collection[(elem[0] as Id).name] = elem[1]
+                        when (val id = elem[0]) {
+                            is Id -> collection[id.name] = elem[1]
+                            else -> collection[id as String] = elem[1]
+                        }
                     }
 
                     else -> throw IllegalArgumentException("Argument is not a collection: $collection")
@@ -256,11 +271,7 @@ class Interpreter(private val program: Program) {
                 return code.also { it.add(replaced) }
             }
 
-            Builtins.EVAL -> {
-                val exp = evaluatedArgs[0] as Expr
-                val vs = evaluatedArgs[1] as MutableMap<String, Any>
-                return eval(exp, vs)
-            }
+            Builtins.EVAL -> throw IllegalStateException("Never reachable")
 
             Builtins.SETDIFF -> {
                 val pair = evaluatedArgs[0]
@@ -325,7 +336,7 @@ class Interpreter(private val program: Program) {
         }
     }
 
-    private fun evalJump(jump: Jump): Id {
+    private fun evalJump(jump: Jump): Label {
         return when (jump) {
             is Goto -> jump.label
             is IfElse -> {
@@ -339,7 +350,7 @@ class Interpreter(private val program: Program) {
         }
     }
 
-    private fun runBlock(basicBlock: BasicBlock): Id {
+    private fun runBlock(basicBlock: BasicBlock): Label {
         if (basicBlock.assignments != null) {
             for (assignment in basicBlock.assignments) {
                 vars[assignment.variable.name] = evalExpr(assignment.value, vars)
@@ -356,6 +367,7 @@ class Interpreter(private val program: Program) {
         resolveLabels()
         var currentLabel = program.basicBlocks.first().label
         while (true) {
+            Log.log("At label $currentLabel")
             val currentBlock = blocks[currentLabel]!!
             val newLabel = runBlock(currentBlock)
 
