@@ -4,7 +4,6 @@ import me.alllex.parsus.annotations.ExperimentalParsusApi
 import me.alllex.parsus.parser.*
 import java.nio.file.Paths
 import java.time.LocalDateTime
-import kotlin.io.path.notExists
 import kotlin.io.path.readText
 
 object Log {
@@ -30,6 +29,7 @@ class Interpreter(private val program: Program) {
     @OptIn(ExperimentalParsusApi::class)
     private fun readVars() {
         for (id in program.read.ids) {
+            println("Input value of $id")
             val inp = readlnOrNull() ?: throw IllegalArgumentException("Unable to read input: EOF reached")
             val parsed = exprParser.parseTracingTokenMatching(inp)
             val result = parsed.result.getOrElse {
@@ -80,6 +80,7 @@ class Interpreter(private val program: Program) {
     }
 
     private fun isStatic(exp: Expr, division: List<String>): Boolean {
+//        Log.log("Is $exp static with division $division")
         return when (exp) {
             is Constant -> true
             is Id -> exp.name in division
@@ -89,7 +90,7 @@ class Interpreter(private val program: Program) {
     }
 
     private fun toExpr(value: Any): Expr {
-        return when (value) {
+        val exp = when (value) {
             is Int -> Constant(value)
             is String -> Literal(value)
             is Expr -> value
@@ -99,6 +100,24 @@ class Interpreter(private val program: Program) {
                 value.entries.map { Operation(Builtins.LIST, listOf(toExpr(it.key!!), toExpr(it.value!!))) })
 
             else -> throw IllegalArgumentException("Value cannot be converted to expression: $value")
+        }
+        return exp
+    }
+
+    private fun eval(exp: Expr, vs: MutableMap<String, Any>): Any {
+        return when (exp) {
+            is Constant -> exp.value
+            is Id -> {
+                val value = vs[exp.name] ?: throw IllegalArgumentException("Given ID $exp is not static by division")
+                if (value is MutableMap<*, *>) {
+                    return value.toMutableMap() // explicit copy for vs in mix
+                } else {
+                    return value
+                }
+            }
+
+            is Literal -> exp.value
+            is Operation -> evalOp(exp, vs)
         }
     }
 
@@ -179,7 +198,7 @@ class Interpreter(private val program: Program) {
                         return toList(block)
                     }
                 }
-                throw IllegalArgumentException("No such program point in the program!")
+                throw IllegalArgumentException("No such program point $pp in the program!")
             }
 
             Builtins.INITIALCODE -> {
@@ -244,9 +263,9 @@ class Interpreter(private val program: Program) {
             }
 
             Builtins.SETDIFF -> {
-                val pair = evaluatedArgs[0] as List<Any>
+                val pair = evaluatedArgs[0]
                 val set = evaluatedArgs[1] as List<Any>
-                return if (pair !in set) pair else mutableListOf()
+                return if (pair !in set) pair else mutableListOf<Any>()
             }
 
             Builtins.TOLIST -> {
@@ -286,23 +305,6 @@ class Interpreter(private val program: Program) {
         }
     }
 
-    private fun eval(exp: Expr, vs: MutableMap<String, Any>): Any {
-        return when (exp) {
-            is Constant -> exp.value
-            is Id -> {
-                val value = vs[exp.name] ?: throw IllegalArgumentException("Given ID is not static by division")
-                if (value is MutableMap<*, *>) {
-                    return value.toMutableMap() // explicit copy for vs in mix
-                } else {
-                    return value
-                }
-            }
-
-            is Literal -> exp.value
-            is Operation -> evalOp(exp, vs)
-        }
-    }
-
     private fun evalExpr(expr: Expr, variables: MutableMap<String, Any>): Any {
         return when (expr) {
             is Constant -> expr.value
@@ -324,7 +326,6 @@ class Interpreter(private val program: Program) {
     }
 
     private fun evalJump(jump: Jump): Id {
-        Log.log("Evaluating jump: $jump")
         return when (jump) {
             is Goto -> jump.label
             is IfElse -> {
@@ -341,8 +342,10 @@ class Interpreter(private val program: Program) {
     private fun runBlock(basicBlock: BasicBlock): Id {
         if (basicBlock.assignments != null) {
             for (assignment in basicBlock.assignments) {
-                Log.log("Processing assignment: $assignment")
                 vars[assignment.variable.name] = evalExpr(assignment.value, vars)
+                if (assignment.variable.name == "command" && assignment.value is Operation && assignment.value.name == Builtins.TOLIST) {
+                    Log.log("Processing inner instruction: ${vars[assignment.variable.name]}")
+                }
             }
         }
         return evalJump(basicBlock.jump)
@@ -353,7 +356,6 @@ class Interpreter(private val program: Program) {
         resolveLabels()
         var currentLabel = program.basicBlocks.first().label
         while (true) {
-            Log.log("At label $currentLabel")
             val currentBlock = blocks[currentLabel]!!
             val newLabel = runBlock(currentBlock)
 
