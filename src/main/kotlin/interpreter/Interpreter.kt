@@ -144,6 +144,12 @@ class Interpreter(private val program: Program) {
                     }
                 }
             }
+            is Literal -> {
+                return Literal(exp.value.replace(Regex("\\{(\\w+)}")) {
+                    val key = it.groupValues[1]
+                    vars[key]?.toString() ?: it.value
+                })
+            }
             else -> return exp
         }
     }
