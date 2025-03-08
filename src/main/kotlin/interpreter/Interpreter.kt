@@ -89,11 +89,11 @@ class Interpreter(private val program: Program) {
         }
     }
 
-    private fun toExpr(value: Any): Expr {
+    private fun toExpr(value: Any, idToLit: Boolean = false): Expr {
         val exp = when (value) {
             is Int -> Constant(value)
             is String -> Literal(value)
-            is Id -> Literal(value.name)
+            is Id -> if (idToLit) Literal(value.name) else value
             is Expr -> value
             is Label -> Literal(value.name)
             is List<*> -> Operation(Builtins.LIST, value.map { toExpr(it!!) })
@@ -125,18 +125,23 @@ class Interpreter(private val program: Program) {
         }
     }
 
-    private fun reduce(exp: Expr, vars: MutableMap<String, Any>): Expr {
+    private fun reduce(exp: Expr, vars: MutableMap<String, Any>, idsToLit: Boolean = true): Expr {
         when (exp) {
             is Id -> {
                 if (vars.containsKey(exp.name)) {
-                    return toExpr(vars[exp.name]!!)
+                    return toExpr(vars[exp.name]!!, idsToLit)
                 }
                 return exp
             }
             is Operation -> {
                 return if (exp.args.all { isStatic(it, vars.keys.toList()) }) {
-                    toExpr(evalExpr(exp, vars))
+                    toExpr(evalExpr(exp, vars), idsToLit)
                 } else {
+                    if (exp.name == Builtins.EVAL) {
+                        Operation(Builtins.EVAL, listOf(Literal(reduce(exp.args[0], vars, false).toString().replace("\"", "\\\"")), exp.args[1]))
+                    } else if (exp.name == Builtins.REDUCE) {
+                        Operation(Builtins.REDUCE, listOf(Literal(reduce(exp.args[0], vars, false).toString().replace("\"", "\\\"")), exp.args[1]))
+                    } else
                     Operation(exp.name, exp.args.map { reduce(it, vars) })
                 }
             }
@@ -146,15 +151,15 @@ class Interpreter(private val program: Program) {
 
     @OptIn(ExperimentalParsusApi::class)
     private fun evalOp(op: Operation, vars: MutableMap<String, Any>): Any {
-        if (op.name == Builtins.EVAL) {
-            val evalVars = vars[(op.args[1] as Id).name]!! as MutableMap<String, Any>
-            return eval(op.args[0], evalVars)
-        }
+//        if (op.name == Builtins.EVAL) {
+//            val evalVars = vars[(op.args[1] as Id).name]!! as MutableMap<String, Any>
+//            return eval(op.args[0], evalVars)
+//        }
 
-        if (op.name == Builtins.REDUCE) {
-            val reduceVars = vars[(op.args[1] as Id).name]!! as MutableMap<String, Any>
-            return reduce(op.args[0], reduceVars)
-        }
+//        if (op.name == Builtins.REDUCE) {
+//            val reduceVars = vars[(op.args[1] as Id).name]!! as MutableMap<String, Any>
+//            return reduce(op.args[0], reduceVars)
+//        }
 
         val evaluatedArgs = op.args.map { evalExpr(it, vars) }
         when (op.name) {
@@ -230,10 +235,24 @@ class Interpreter(private val program: Program) {
                 return isStatic(arg, division)
             }
 
+//            Builtins.REDUCE -> throw IllegalArgumentException()
             Builtins.REDUCE -> {
-                val exp = evaluatedArgs[0] as Expr
+                val exp = when (val arg0 = evaluatedArgs[0]) {
+                    is String -> exprParser.parseOrThrow(arg0)
+                    else -> arg0 as Expr
+                }
                 val variables = evaluatedArgs[1] as MutableMap<String, Any>
                 return reduce(exp, variables)
+            }
+
+//            Builtins.EVAL -> throw IllegalArgumentException()
+            Builtins.EVAL -> {
+                val exp = when (val arg0 = evaluatedArgs[0]) {
+                    is String -> exprParser.parseOrThrow(arg0)
+                    else -> arg0 as Expr
+                }
+                val vs = evaluatedArgs[1] as MutableMap<String, Any>
+                return eval(exp, vs)
             }
 
             Builtins.APPEND -> {
@@ -271,7 +290,7 @@ class Interpreter(private val program: Program) {
                 return code.also { it.add(replaced) }
             }
 
-            Builtins.EVAL -> throw IllegalStateException("Never reachable")
+
 
             Builtins.SETDIFF -> {
                 val pair = evaluatedArgs[0]

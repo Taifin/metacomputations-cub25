@@ -6,7 +6,7 @@ import me.alllex.parsus.token.regexToken
 
 abstract class ExprGrammar<T> : Grammar<T>() {
 
-    private val stringLiteral by regexToken("\"[^\"]+\"") map { Literal(it.text.trim('\"')) }
+    private val stringLiteral by regexToken("\"([^\"\\\\]*(\\\\.[^\"\\\\]*)*)\"") map { Literal(it.text.trim('\"').replace("\\\"", "\"")) }
 
     private val constant by regexToken("-?\\d+") map { Constant(it.text.toInt()) }
 
