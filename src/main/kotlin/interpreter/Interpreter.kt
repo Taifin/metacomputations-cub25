@@ -137,12 +137,11 @@ class Interpreter(private val program: Program) {
                 return if (exp.args.all { isStatic(it, vars.keys.toList()) }) {
                     toExpr(evalExpr(exp, vars), idsToLit)
                 } else {
-                    if (exp.name == Builtins.EVAL) {
-                        Operation(Builtins.EVAL, listOf(Literal(reduce(exp.args[0], vars, false).toString().replace("\"", "\\\"")), exp.args[1]))
-                    } else if (exp.name == Builtins.REDUCE) {
-                        Operation(Builtins.REDUCE, listOf(Literal(reduce(exp.args[0], vars, false).toString().replace("\"", "\\\"")), exp.args[1]))
-                    } else
-                    Operation(exp.name, exp.args.map { reduce(it, vars) })
+                    if (exp.name == Builtins.EVAL || exp.name == Builtins.REDUCE) {
+                        exp.copy(args = listOf(Literal(reduce(exp.args[0], vars, false).toString().replace("\"", "\\\"")), exp.args[1]))
+                    } else {
+                        exp.copy(args = exp.args.map { reduce(it, vars) })
+                    }
                 }
             }
             else -> return exp

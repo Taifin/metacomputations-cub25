@@ -11,6 +11,7 @@ class ProgPrettyPrinter {
         }
 
         val writer = file.bufferedWriter()
+        writer.write("read (vs);\n")
 
         for (block in prog) {
             val label = block[0]
