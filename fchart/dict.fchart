@@ -1,0 +1,6 @@
+read (name, names, valuelist);
+search: if eq (name, head (names)) goto found else cont;
+cont: valuelist := tail (valuelist);
+      names := tail (names);
+      goto search;
+found: return head (valuelist);
