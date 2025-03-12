@@ -1,0 +1,11 @@
+read (Read);
+lab0:	Left := list();
+		if eq("0",firstsym(Right)) goto lab1 else lab2;
+
+lab1:	Right := cons("1",tail(Right));
+		return Right;
+
+lab2:	Left := cons(firstsym(Right),Left);
+		Right := tail(Right);
+		if eq("0",firstsym(Right)) goto lab1 else lab2;
+

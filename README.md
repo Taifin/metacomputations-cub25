@@ -43,3 +43,5 @@ Similarly, run
 
 It first runs mix on itself plus the interpreter, saving the compiled interpreter program to `compiler.fchart`.
 Then it executes the compiler on the same example TM program and outputs the results to `compiled-2.fchart`.
+
+The same programs can be found in the [reference directory](fchart/reference). 
