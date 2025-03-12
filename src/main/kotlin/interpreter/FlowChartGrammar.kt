@@ -1,5 +1,6 @@
 package interpreter
 
+import interpreter.ast.*
 import me.alllex.parsus.parser.*
 import me.alllex.parsus.token.literalToken
 import me.alllex.parsus.token.regexToken
@@ -37,7 +38,7 @@ abstract class ExprGrammar<T> : Grammar<T>() {
         enumValueOf<Builtins>(it.text.uppercase())
     }
 
-    protected val op by parser {
+    private val op by parser {
         val name = opName()
         lBracket()
         val args = separated(expr, comma)()

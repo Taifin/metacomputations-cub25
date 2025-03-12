@@ -2,17 +2,10 @@ package interpreter
 
 import me.alllex.parsus.annotations.ExperimentalParsusApi
 import me.alllex.parsus.parser.*
+import interpreter.ast.*
+import util.Log
 import java.nio.file.Paths
-import java.time.LocalDateTime
 import kotlin.io.path.readText
-
-object Log {
-    var enabled = false
-
-    fun log(str: String) {
-        if (enabled) System.err.println("[DEBUG ${LocalDateTime.now()}]: $str")
-    }
-}
 
 class Interpreter(private val program: Program) {
     private val vars = mutableMapOf<String, Any>()
@@ -80,7 +73,6 @@ class Interpreter(private val program: Program) {
     }
 
     private fun isStatic(exp: Expr, division: List<String>): Boolean {
-//        Log.log("Is $exp static with division $division")
         return when (exp) {
             is Constant -> true
             is Id -> exp.name in division
@@ -157,16 +149,6 @@ class Interpreter(private val program: Program) {
 
     @OptIn(ExperimentalParsusApi::class)
     private fun evalOp(op: Operation, vars: MutableMap<String, Any>): Any {
-//        if (op.name == Builtins.EVAL) {
-//            val evalVars = vars[(op.args[1] as Id).name]!! as MutableMap<String, Any>
-//            return eval(op.args[0], evalVars)
-//        }
-
-//        if (op.name == Builtins.REDUCE) {
-//            val reduceVars = vars[(op.args[1] as Id).name]!! as MutableMap<String, Any>
-//            return reduce(op.args[0], reduceVars)
-//        }
-
         val evaluatedArgs = op.args.map { evalExpr(it, vars) }
         when (op.name) {
             Builtins.CONS -> {
@@ -245,7 +227,6 @@ class Interpreter(private val program: Program) {
                 return isStatic(arg, division)
             }
 
-//            Builtins.REDUCE -> throw IllegalArgumentException()
             Builtins.REDUCE -> {
                 val exp = when (val arg0 = evaluatedArgs[0]) {
                     is String -> exprParser.parseOrThrow(arg0)
@@ -255,7 +236,6 @@ class Interpreter(private val program: Program) {
                 return reduce(exp, variables)
             }
 
-//            Builtins.EVAL -> throw IllegalArgumentException()
             Builtins.EVAL -> {
                 val exp = when (val arg0 = evaluatedArgs[0]) {
                     is String -> exprParser.parseOrThrow(arg0)
@@ -352,6 +332,7 @@ class Interpreter(private val program: Program) {
             }
 
             Builtins.COMPRESSSTATE -> {
+                // compiled mix uses strings instead of labels and ids
                 val arg0 = evaluatedArgs[0]
                 if (arg0 is String) {
                     val pp = arg0

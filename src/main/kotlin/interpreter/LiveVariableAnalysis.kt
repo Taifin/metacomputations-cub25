@@ -1,5 +1,7 @@
 package interpreter
 
+import interpreter.ast.*
+
 object LiveVariableAnalysis {
     data class CFGNode(val block: BasicBlock, val successors: List<Label>)
     data class LiveSets(val use: Set<Id>, val def: Set<Id>)

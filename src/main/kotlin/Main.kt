@@ -1,8 +1,8 @@
 import interpreter.FlowChartGrammar
 import interpreter.Interpreter
-import interpreter.Log
 import me.alllex.parsus.annotations.ExperimentalParsusApi
 import me.alllex.parsus.parser.getOrElse
+import util.Log
 import java.nio.file.Paths
 import kotlin.io.path.notExists
 import kotlin.io.path.readText
