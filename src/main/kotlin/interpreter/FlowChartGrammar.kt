@@ -28,9 +28,12 @@ abstract class ExprGrammar<T> : Grammar<T>() {
             literalToken("reduce") or
             literalToken("eval") or
             literalToken("setdiff") or
+            literalToken("set") or
             literalToken("parse") or
             literalToken("appendCode") or
-            literalToken("append") map {
+            literalToken("append") or
+            literalToken("findProjections") or
+            literalToken("compressState") map {
         enumValueOf<Builtins>(it.text.uppercase())
     }
 

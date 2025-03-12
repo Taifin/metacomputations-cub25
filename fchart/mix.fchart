@@ -1,6 +1,7 @@
 read        (program, division, vs);
 
 begin:      programL := toList(program);
+            liveVars := findProjections(program, division);
             startPP  := head(head(programL));
             rest     := list(startPP);
             pending  := list(list(startPP, vs));
@@ -23,7 +24,7 @@ lookupPPB:  pp       := head(lRest);
             if eq(pp, targetPP) goto process else lookupPP;
 
 process:    bb       := lookup(pp, program);
-            code     := initialCode(pp, vs);
+            code     := initialCode(pp, compressState(pp, vs, liveVars));
             goto inner;
 inner:      if eq(bb, list()) goto cont2 else innBody;
 innBody:    command  := toList(head(bb));
@@ -63,8 +64,8 @@ hIDA:       pending  := append(pending, setdiff(list(pp0, vs), marked));
             rest     := append(rest, setdiff(pp0, rest));
             rest     := append(rest, setdiff(pp1, rest));
             reduced  := reduce(exp, vs);
-            lab0     := lookupLabel(pp0, vs);
-            lab1     := lookupLabel(pp1, vs);
+            lab0     := lookupLabel(pp0, compressState(pp0, vs, liveVars));
+            lab1     := lookupLabel(pp1, compressState(pp1, vs, liveVars));
             code     := appendCode(code, "if {reduced} goto {lab0} else {lab1};");
             goto inner;
 

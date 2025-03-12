@@ -97,6 +97,7 @@ class Interpreter(private val program: Program) {
             is Expr -> value
             is Label -> Literal(value.name)
             is List<*> -> Operation(Builtins.LIST, value.map { toExpr(it!!) })
+            is Set<*> -> Operation(Builtins.SET, value.map { toExpr(it!!) })
             is Map<*, *> -> Operation(
                 Builtins.MAP,
                 value.entries.map { Operation(Builtins.LIST, listOf(toExpr(it.key!!), toExpr(it.value!!))) })
@@ -195,6 +196,10 @@ class Interpreter(private val program: Program) {
 
             Builtins.LIST -> {
                 return evaluatedArgs
+            }
+
+            Builtins.SET -> {
+                return evaluatedArgs.toSet()
             }
 
             Builtins.FIRSTSYM -> {
@@ -336,6 +341,32 @@ class Interpreter(private val program: Program) {
                     )
                 }
                 return result
+            }
+
+            Builtins.FINDPROJECTIONS -> {
+                val program = evaluatedArgs[0] as Program
+                val division = evaluatedArgs[1] as List<String>
+                val liveVars = LiveVariableAnalysis.analyse(program)
+                val mapped = liveVars.mapValues { it.value.intersect(division.map { Id(it) }.toSet()) }
+                return mapped
+            }
+
+            Builtins.COMPRESSSTATE -> {
+                val arg0 = evaluatedArgs[0]
+                if (arg0 is String) {
+                    val pp = arg0
+                    val state = evaluatedArgs[1] as Map<String, Any>
+                    val liveVars = evaluatedArgs[2] as Map<String, Set<String>>
+                    val varsAtPp = liveVars[pp]!!
+                    return state.filterKeys { key -> varsAtPp.contains(key) }
+                } else {
+                    val pp = arg0 as Label
+                    val state = evaluatedArgs[1] as Map<String, Any>
+                    val liveVars = evaluatedArgs[2] as Map<Label, Set<Id>>
+                    val varsAtPp = liveVars[pp]!!
+                    val compressed = state.filterKeys { key -> varsAtPp.contains(Id(key)) }
+                    return compressed
+                }
             }
         }
     }

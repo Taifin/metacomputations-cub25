@@ -32,14 +32,16 @@ fun main(args: Array<String>) {
     }
     val interpreter = Interpreter(parsed)
     val result = interpreter.run()
-    println("What to do with the interpreted results? (print|prog <file>)")
+    println("What to do with the interpreted results? (print|prog <file> [read?])")
     val mode = readln()
     if (mode == "print") {
         println(result)
     } else if (mode.startsWith("prog")) {
-        val file = mode.split(" ")[1]
+        val split = mode.split(" ")
+        val file = split[1]
+        val toRead = if (split.size == 3) split[2].split(", ") else emptyList()
         val path = Paths.get(file)
         val prettyPrinter = ProgPrettyPrinter()
-        prettyPrinter.prettyPrint(result as List<List<String>>, path)
+        prettyPrinter.prettyPrint(result as List<List<String>>, path, toRead)
     }
 }

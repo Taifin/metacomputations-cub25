@@ -10,6 +10,7 @@ enum class Builtins(val id: String) {
     TAIL("tail"),
     LIST("list"),
     MAP("map"),
+    SET("set"),
     EQ("eq"),
     FIRSTSYM("firstsym"),
     NEWTAIL("newtail"),
@@ -24,6 +25,8 @@ enum class Builtins(val id: String) {
     APPEND("append"),
     APPENDCODE("appendCode"),
     PARSE("parse"),
+    FINDPROJECTIONS("findProjections"),
+    COMPRESSSTATE("compressState")
 }
 
 sealed interface Expr
