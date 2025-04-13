@@ -15,30 +15,53 @@ object LiveVariableAnalysis {
         }
     }
 
-    private fun collectUseDef(block: BasicBlock): LiveSets {
+    private fun isStatic(exp: Expr, division: List<String>): Boolean {
+        return when (exp) {
+            is Constant -> true
+            is Id -> exp.name in division
+            is Literal -> true
+            is Operation -> exp.args.all { isStatic(it, division) }
+        }
+    }
+
+    private fun collectUseDef(block: BasicBlock, division: List<String>): LiveSets {
         val use = mutableSetOf<Id>()
         val def = mutableSetOf<Id>()
         for (assign in block.assignments ?: emptyList()) {
             def.add(assign.variable)
-            use.addAll(usedVariables(assign.value))
+            usedVariables(assign.value).forEach {
+                if (it !in def) {
+                    use.add(it)
+                }
+            }
         }
 
-        when (block.jump) {
-            is Return -> use.addAll(usedVariables(block.jump.expr))
-            is IfElse -> use.addAll(usedVariables(block.jump.cond))
-            else -> {}
+        usedVariables(when (block.jump) {
+            is Return -> block.jump.expr
+            is IfElse -> block.jump.cond
+            else -> Constant(0)
+        }).forEach {
+            if (it !in def) {
+                use.add(it)
+            }
         }
 
-        return LiveSets(use.filterNot { it in def }.toSet(), def)
+        return LiveSets(use, def)
     }
 
-    private fun buildCFG(program: Program) = program.basicBlocks.associateBy(
+    private fun buildCFG(program: Program, division: List<String>) = program.basicBlocks.associateBy(
         keySelector = { it.label },
         valueTransform = {
             val successors = when (it.jump) {
                 is Return -> emptyList()
                 is Goto -> listOf(it.jump.label)
-                is IfElse -> listOf(it.jump.trueBranch, it.jump.falseBranch)
+                is IfElse -> {
+                    if (isStatic(it.jump.cond, division)) {
+                        listOf(it.jump.trueBranch, it.jump.falseBranch)
+                    } else {
+                        emptyList()
+                    }
+                }
             }
             CFGNode(it, successors)
         }
@@ -46,10 +69,10 @@ object LiveVariableAnalysis {
 
     private fun reassignedVals(program: Program) = program.basicBlocks.flatMap { it.assignments?.map { it.variable } ?: emptyList() }.toSet()
 
-    fun analyse(program: Program): Map<Label, Set<Id>> {
-        val cfg = buildCFG(program)
+    fun analyse(program: Program, division: List<String>): Map<Label, Set<Id>> {
+        val cfg = buildCFG(program, division)
         val changingVars = reassignedVals(program)
-        val useDefMap = cfg.mapValues { collectUseDef(it.value.block) }
+        val useDefMap = cfg.mapValues { collectUseDef(it.value.block, division) }
 
         val inMap = mutableMapOf<Label, Set<Id>>()
         val outMap = mutableMapOf<Label, Set<Id>>()
@@ -61,7 +84,8 @@ object LiveVariableAnalysis {
         var changed: Boolean
         do {
             changed = false
-            for ((label, node) in cfg) {
+            for (label in cfg.keys.reversed()) {
+                val node = cfg[label]!!
                 val oldIn = inMap[label]!!
                 val oldOut = outMap[label]!!
 

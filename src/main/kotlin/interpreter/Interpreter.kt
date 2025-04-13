@@ -326,7 +326,7 @@ class Interpreter(private val program: Program) {
             Builtins.FINDPROJECTIONS -> {
                 val program = evaluatedArgs[0] as Program
                 val division = evaluatedArgs[1] as List<String>
-                val liveVars = LiveVariableAnalysis.analyse(program)
+                val liveVars = LiveVariableAnalysis.analyse(program, division)
                 val mapped = liveVars.mapValues { it.value.intersect(division.map { Id(it) }.toSet()) }
                 return mapped
             }
