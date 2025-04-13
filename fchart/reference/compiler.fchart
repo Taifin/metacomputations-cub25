@@ -1,0 +1,276 @@
+read (vs);
+lab0:	liveVars := map(list("init",set()),list("loop",set(Qtail)),list("cont",set()),list("cont1",set(Operator,Qtail,Instruction)),list("cont2",set(Operator,Instruction,Qtail)),list("cont3",set(Operator,Instruction,Qtail)),list("cont4",set(Operator,Instruction,Qtail)),list("doRight",set(Qtail)),list("doLeft",set(Qtail)),list("doWrite",set(Instruction,Qtail)),list("doGoto",set(Instruction)),list("doIf",set(Instruction,Qtail)),list("jump",set(Nextlabel)),list("error",set()),list("stop",set()));
+		pending := list(list("init",vs));
+		marked := list();
+		residual := list();
+		if eq(pending,list()) goto lab1 else lab2;
+
+lab1:	return residual;
+
+lab2:	current := head(pending);
+		pending := tail(pending);
+		marked := cons(current,marked);
+		targetPP := head(current);
+		vs := head(tail(current));
+		if eq("init",targetPP) goto lab3 else lab4;
+
+lab3:	code := initialCode("init",compressState("init",vs,liveVars));
+		vs := append(vs,list("Qtail",eval("Q",vs)));
+		reduced := reduce("list()",vs);
+		code := appendCode(code,"Left := {reduced};");
+		if eval("eq(Qtail,list())",vs) goto lab5 else lab6;
+
+lab4:	if eq(pending,list()) goto lab1 else lab2;
+
+lab5:	reduced := reduce("Right",vs);
+		code := appendCode(code,"return {reduced};");
+		residual := append(residual,setdiff(code,residual));
+		vs := head(tail(current));
+		if eq(pending,list()) goto lab1 else lab2;
+
+lab6:	vs := append(vs,list("Instruction",eval("head(Qtail)",vs)));
+		vs := append(vs,list("Qtail",eval("tail(Qtail)",vs)));
+		vs := append(vs,list("Operator",eval("head(Instruction)",vs)));
+		if eval("eq(Operator,\"right\")",vs) goto lab7 else lab8;
+
+lab7:	reduced := reduce("cons(firstsym(Right),Left)",vs);
+		code := appendCode(code,"Left := {reduced};");
+		reduced := reduce("tail(Right)",vs);
+		code := appendCode(code,"Right := {reduced};");
+		if eval("eq(Qtail,list())",vs) goto lab5 else lab6;
+
+lab8:	if eval("eq(Operator,\"left\")",vs) goto lab9 else lab10;
+
+lab9:	reduced := reduce("cons(firstsym(Left),Right)",vs);
+		code := appendCode(code,"Right := {reduced};");
+		reduced := reduce("tail(Left)",vs);
+		code := appendCode(code,"Left := {reduced};");
+		if eval("eq(Qtail,list())",vs) goto lab5 else lab6;
+
+lab10:	if eval("eq(Operator,\"write\")",vs) goto lab11 else lab12;
+
+lab11:	vs := append(vs,list("Symbol",eval("head(tail(Instruction))",vs)));
+		reduced := reduce("cons(Symbol,tail(Right))",vs);
+		code := appendCode(code,"Right := {reduced};");
+		if eval("eq(Qtail,list())",vs) goto lab5 else lab6;
+
+lab12:	if eval("eq(Operator,\"goto\")",vs) goto lab13 else lab14;
+
+lab13:	vs := append(vs,list("Nextlabel",eval("head(tail(Instruction))",vs)));
+		vs := append(vs,list("Qtail",eval("newtail(Nextlabel,Q)",vs)));
+		if eval("eq(Qtail,list())",vs) goto lab5 else lab6;
+
+lab14:	if eval("eq(Operator,\"if\")",vs) goto lab15 else lab16;
+
+lab15:	vs := append(vs,list("Symbol",eval("head(tail(Instruction))",vs)));
+		vs := append(vs,list("Nextlabel",eval("head(tail(tail(tail(Instruction))))",vs)));
+		pending := append(pending,setdiff(list("jump",vs),marked));
+		pending := append(pending,setdiff(list("loop",vs),marked));
+		reduced := reduce("eq(Symbol,firstsym(Right))",vs);
+		lab0 := lookupLabel("jump",compressState("jump",vs,liveVars));
+		lab1 := lookupLabel("loop",compressState("loop",vs,liveVars));
+		code := appendCode(code,"if {reduced} goto {lab0} else {lab1};");
+		residual := append(residual,setdiff(code,residual));
+		vs := head(tail(current));
+		if eq(pending,list()) goto lab1 else lab17;
+
+lab18:	reduced := reduce("\"Syntax error: Instruction\"",vs);
+		code := appendCode(code,"return {reduced};");
+		residual := append(residual,setdiff(code,residual));
+		vs := head(tail(current));
+		if eq(pending,list()) goto lab1 else lab17;
+
+lab17:	current := head(pending);
+		pending := tail(pending);
+		marked := cons(current,marked);
+		targetPP := head(current);
+		vs := head(tail(current));
+		if eq("init",targetPP) goto lab19 else lab20;
+
+lab19:	code := initialCode("init",compressState("init",vs,liveVars));
+		vs := append(vs,list("Qtail",eval("Q",vs)));
+		reduced := reduce("list()",vs);
+		code := appendCode(code,"Left := {reduced};");
+		if eval("eq(Qtail,list())",vs) goto lab21 else lab22;
+
+lab20:	if eq("jump",targetPP) goto lab23 else lab24;
+
+lab21:	reduced := reduce("Right",vs);
+		code := appendCode(code,"return {reduced};");
+		residual := append(residual,setdiff(code,residual));
+		vs := head(tail(current));
+		if eq("jump",targetPP) goto lab23 else lab24;
+
+lab22:	vs := append(vs,list("Instruction",eval("head(Qtail)",vs)));
+		vs := append(vs,list("Qtail",eval("tail(Qtail)",vs)));
+		vs := append(vs,list("Operator",eval("head(Instruction)",vs)));
+		if eval("eq(Operator,\"right\")",vs) goto lab25 else lab26;
+
+lab23:	code := initialCode("jump",compressState("jump",vs,liveVars));
+		vs := append(vs,list("Qtail",eval("newtail(Nextlabel,Q)",vs)));
+		if eval("eq(Qtail,list())",vs) goto lab27 else lab28;
+
+lab24:	if eq("loop",targetPP) goto lab29 else lab30;
+
+lab25:	reduced := reduce("cons(firstsym(Right),Left)",vs);
+		code := appendCode(code,"Left := {reduced};");
+		reduced := reduce("tail(Right)",vs);
+		code := appendCode(code,"Right := {reduced};");
+		if eval("eq(Qtail,list())",vs) goto lab21 else lab22;
+
+lab26:	if eval("eq(Operator,\"left\")",vs) goto lab31 else lab32;
+
+lab27:	reduced := reduce("Right",vs);
+		code := appendCode(code,"return {reduced};");
+		residual := append(residual,setdiff(code,residual));
+		vs := head(tail(current));
+		if eq("loop",targetPP) goto lab29 else lab30;
+
+lab28:	vs := append(vs,list("Instruction",eval("head(Qtail)",vs)));
+		vs := append(vs,list("Qtail",eval("tail(Qtail)",vs)));
+		vs := append(vs,list("Operator",eval("head(Instruction)",vs)));
+		if eval("eq(Operator,\"right\")",vs) goto lab33 else lab34;
+
+lab29:	code := initialCode("loop",compressState("loop",vs,liveVars));
+		if eval("eq(Qtail,list())",vs) goto lab35 else lab36;
+
+lab30:	if eq(pending,list()) goto lab1 else lab17;
+
+lab31:	reduced := reduce("cons(firstsym(Left),Right)",vs);
+		code := appendCode(code,"Right := {reduced};");
+		reduced := reduce("tail(Left)",vs);
+		code := appendCode(code,"Left := {reduced};");
+		if eval("eq(Qtail,list())",vs) goto lab21 else lab22;
+
+lab32:	if eval("eq(Operator,\"write\")",vs) goto lab37 else lab38;
+
+lab33:	reduced := reduce("cons(firstsym(Right),Left)",vs);
+		code := appendCode(code,"Left := {reduced};");
+		reduced := reduce("tail(Right)",vs);
+		code := appendCode(code,"Right := {reduced};");
+		if eval("eq(Qtail,list())",vs) goto lab27 else lab28;
+
+lab34:	if eval("eq(Operator,\"left\")",vs) goto lab39 else lab40;
+
+lab35:	reduced := reduce("Right",vs);
+		code := appendCode(code,"return {reduced};");
+		residual := append(residual,setdiff(code,residual));
+		vs := head(tail(current));
+		if eq(pending,list()) goto lab1 else lab17;
+
+lab36:	vs := append(vs,list("Instruction",eval("head(Qtail)",vs)));
+		vs := append(vs,list("Qtail",eval("tail(Qtail)",vs)));
+		vs := append(vs,list("Operator",eval("head(Instruction)",vs)));
+		if eval("eq(Operator,\"right\")",vs) goto lab41 else lab42;
+
+lab37:	vs := append(vs,list("Symbol",eval("head(tail(Instruction))",vs)));
+		reduced := reduce("cons(Symbol,tail(Right))",vs);
+		code := appendCode(code,"Right := {reduced};");
+		if eval("eq(Qtail,list())",vs) goto lab21 else lab22;
+
+lab38:	if eval("eq(Operator,\"goto\")",vs) goto lab43 else lab44;
+
+lab39:	reduced := reduce("cons(firstsym(Left),Right)",vs);
+		code := appendCode(code,"Right := {reduced};");
+		reduced := reduce("tail(Left)",vs);
+		code := appendCode(code,"Left := {reduced};");
+		if eval("eq(Qtail,list())",vs) goto lab27 else lab28;
+
+lab40:	if eval("eq(Operator,\"write\")",vs) goto lab45 else lab46;
+
+lab41:	reduced := reduce("cons(firstsym(Right),Left)",vs);
+		code := appendCode(code,"Left := {reduced};");
+		reduced := reduce("tail(Right)",vs);
+		code := appendCode(code,"Right := {reduced};");
+		if eval("eq(Qtail,list())",vs) goto lab35 else lab36;
+
+lab42:	if eval("eq(Operator,\"left\")",vs) goto lab47 else lab48;
+
+lab43:	vs := append(vs,list("Nextlabel",eval("head(tail(Instruction))",vs)));
+		vs := append(vs,list("Qtail",eval("newtail(Nextlabel,Q)",vs)));
+		if eval("eq(Qtail,list())",vs) goto lab21 else lab22;
+
+lab44:	if eval("eq(Operator,\"if\")",vs) goto lab49 else lab50;
+
+lab45:	vs := append(vs,list("Symbol",eval("head(tail(Instruction))",vs)));
+		reduced := reduce("cons(Symbol,tail(Right))",vs);
+		code := appendCode(code,"Right := {reduced};");
+		if eval("eq(Qtail,list())",vs) goto lab27 else lab28;
+
+lab46:	if eval("eq(Operator,\"goto\")",vs) goto lab51 else lab52;
+
+lab47:	reduced := reduce("cons(firstsym(Left),Right)",vs);
+		code := appendCode(code,"Right := {reduced};");
+		reduced := reduce("tail(Left)",vs);
+		code := appendCode(code,"Left := {reduced};");
+		if eval("eq(Qtail,list())",vs) goto lab35 else lab36;
+
+lab48:	if eval("eq(Operator,\"write\")",vs) goto lab53 else lab54;
+
+lab49:	vs := append(vs,list("Symbol",eval("head(tail(Instruction))",vs)));
+		vs := append(vs,list("Nextlabel",eval("head(tail(tail(tail(Instruction))))",vs)));
+		pending := append(pending,setdiff(list("jump",vs),marked));
+		pending := append(pending,setdiff(list("loop",vs),marked));
+		reduced := reduce("eq(Symbol,firstsym(Right))",vs);
+		lab0 := lookupLabel("jump",compressState("jump",vs,liveVars));
+		lab1 := lookupLabel("loop",compressState("loop",vs,liveVars));
+		code := appendCode(code,"if {reduced} goto {lab0} else {lab1};");
+		residual := append(residual,setdiff(code,residual));
+		vs := head(tail(current));
+		if eq("jump",targetPP) goto lab23 else lab24;
+
+lab50:	reduced := reduce("\"Syntax error: Instruction\"",vs);
+		code := appendCode(code,"return {reduced};");
+		residual := append(residual,setdiff(code,residual));
+		vs := head(tail(current));
+		if eq("jump",targetPP) goto lab23 else lab24;
+
+lab51:	vs := append(vs,list("Nextlabel",eval("head(tail(Instruction))",vs)));
+		vs := append(vs,list("Qtail",eval("newtail(Nextlabel,Q)",vs)));
+		if eval("eq(Qtail,list())",vs) goto lab27 else lab28;
+
+lab52:	if eval("eq(Operator,\"if\")",vs) goto lab55 else lab56;
+
+lab53:	vs := append(vs,list("Symbol",eval("head(tail(Instruction))",vs)));
+		reduced := reduce("cons(Symbol,tail(Right))",vs);
+		code := appendCode(code,"Right := {reduced};");
+		if eval("eq(Qtail,list())",vs) goto lab35 else lab36;
+
+lab54:	if eval("eq(Operator,\"goto\")",vs) goto lab57 else lab58;
+
+lab55:	vs := append(vs,list("Symbol",eval("head(tail(Instruction))",vs)));
+		vs := append(vs,list("Nextlabel",eval("head(tail(tail(tail(Instruction))))",vs)));
+		pending := append(pending,setdiff(list("jump",vs),marked));
+		pending := append(pending,setdiff(list("loop",vs),marked));
+		reduced := reduce("eq(Symbol,firstsym(Right))",vs);
+		lab0 := lookupLabel("jump",compressState("jump",vs,liveVars));
+		lab1 := lookupLabel("loop",compressState("loop",vs,liveVars));
+		code := appendCode(code,"if {reduced} goto {lab0} else {lab1};");
+		residual := append(residual,setdiff(code,residual));
+		vs := head(tail(current));
+		if eq("loop",targetPP) goto lab29 else lab30;
+
+lab56:	reduced := reduce("\"Syntax error: Instruction\"",vs);
+		code := appendCode(code,"return {reduced};");
+		residual := append(residual,setdiff(code,residual));
+		vs := head(tail(current));
+		if eq("loop",targetPP) goto lab29 else lab30;
+
+lab57:	vs := append(vs,list("Nextlabel",eval("head(tail(Instruction))",vs)));
+		vs := append(vs,list("Qtail",eval("newtail(Nextlabel,Q)",vs)));
+		if eval("eq(Qtail,list())",vs) goto lab35 else lab36;
+
+lab58:	if eval("eq(Operator,\"if\")",vs) goto lab59 else lab18;
+
+lab59:	vs := append(vs,list("Symbol",eval("head(tail(Instruction))",vs)));
+		vs := append(vs,list("Nextlabel",eval("head(tail(tail(tail(Instruction))))",vs)));
+		pending := append(pending,setdiff(list("jump",vs),marked));
+		pending := append(pending,setdiff(list("loop",vs),marked));
+		reduced := reduce("eq(Symbol,firstsym(Right))",vs);
+		lab0 := lookupLabel("jump",compressState("jump",vs,liveVars));
+		lab1 := lookupLabel("loop",compressState("loop",vs,liveVars));
+		code := appendCode(code,"if {reduced} goto {lab0} else {lab1};");
+		residual := append(residual,setdiff(code,residual));
+		vs := head(tail(current));
+		if eq(pending,list()) goto lab1 else lab17;
+
