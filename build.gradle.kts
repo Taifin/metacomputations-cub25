@@ -50,12 +50,12 @@ tasks.register<JavaExec>("mixMixTm") {
 
     val mixTmInput = """
         parse("fchart/mix.fchart")
-        list("program","division","programL","startPP","rest","lRest","pp","bb","command","fst","x","exp","tmp","pp0","pp1")
+        list("program","division","programL","gotoLab","startPP","rest","lRest","pp","bb","command","fst","x","exp","tmp","pp0","pp1")
         map(list("program",parse("fchart/turing-machine/turing-machine-int.fchart")),list("division",list("Q","Qtail","Instruction","Operator","Symbol","Nextlabel")))
         prog compiler.fchart vs
     """.trimIndent()
 
-    args = listOf("fchart/mix.fchart")
+    args = listOf("fchart/mix.fchart", "--debug")
     standardInput = mixTmInput.byteInputStream()
     mainClass.set(application.mainClass)
     classpath = sourceSets["main"].runtimeClasspath
@@ -68,7 +68,7 @@ tasks.register<JavaExec>("secondProjection") {
 
     val mixTmInput = """
         map(list("Q",list(list("if","0","goto","3"),list("right"),list("goto","0"),list("write","1"))))
-        prog compiled-2.fchart Read
+        prog compiled-2.fchart Right
     """.trimIndent()
 
     args = listOf("compiler.fchart")
