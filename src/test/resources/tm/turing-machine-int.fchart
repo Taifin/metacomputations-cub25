@@ -1,0 +1,37 @@
+read (Q, Right);
+init:   Qtail := Q;
+        Left := list();
+        goto loop;
+loop:   if eq(Qtail, list()) goto stop else cont;
+cont:   Instruction := head(Qtail);
+        Qtail := tail(Qtail);
+        Operator := head(Instruction);
+
+        if eq(Operator, "right") goto doRight else cont1;
+cont1:  if eq(Operator, "left")  goto doLeft  else cont2;
+cont2:  if eq(Operator, "write") goto doWrite else cont3;
+cont3:  if eq(Operator, "goto")  goto doGoto  else cont4;
+cont4:  if eq(Operator, "if")    goto doIf    else error;
+
+doRight: Left := cons(firstsym(Right), Left);
+         Right := tail(Right);
+         goto loop;
+doLeft:  Right := cons(firstsym(Left), Right);
+         Left := tail(Left);
+         goto loop;
+doWrite: Symbol := head(tail(Instruction));
+         Right := cons(Symbol, tail(Right));
+         goto loop;
+doGoto:  Nextlabel := head(tail(Instruction));
+         Qtail := newtail(Nextlabel, Q);
+         goto loop;
+doIf:    Symbol := head(tail(Instruction));
+         Nextlabel := head(tail(tail(tail(Instruction))));
+         if eq(Symbol, firstsym(Right)) goto jump else loop;
+
+jump:    Qtail := newtail(Nextlabel, Q);
+         goto loop;
+
+error:   return "Syntax error: Instruction";
+
+stop:    return Right;

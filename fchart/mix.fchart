@@ -1,0 +1,73 @@
+read        (program, division, vs);
+
+begin:      liveVars := findProjections(program, division);
+            startPP  := head(head(toList(program)));
+            rest     := list(startPP);
+            pending  := list(list(startPP, vs));
+            marked   := list();
+            residual := list();
+            goto   outBody;
+outBody:    current  := head(pending);
+            pending  := tail(pending);
+            marked   := cons(current, marked);
+            targetPP := head(current);
+            rest     := rest;
+            vs       := head(tail(current));
+            code     := initialCode(targetPP, compressState(targetPP, vs, liveVars));
+            pp       := startPP;
+            bb       := lookup(pp, program);
+            if eq(pp, targetPP) goto innBody else lookupPPB;
+lookupPPB:  pp       := nextLabel(pp, program, rest);
+            bb       := lookup(pp, program);
+            if eq(pp, targetPP) goto innBody else lookupPPB;
+
+innBody:    command  := toList(head(bb));
+            bb       := tail(bb);
+            fst      := head(command);
+            command  := tail(command);
+
+            if eq(fst, ":=") goto hAssign else c;
+c:          if eq(fst, "goto") goto hGoto else c0;
+c0:         if eq(fst, "if") goto hIf else c1;
+c1:         if eq(fst, "return") goto hReturn else error;
+error:      return "ERROR";
+
+hAssign:    x        := head(command);
+            exp      := head(tail(command));
+            if isStatic(x, division) goto hAS else hAD;
+hAS:        vs       := append(vs, list(x, eval(exp, vs)));
+            if eq(bb, list()) goto cont2 else innBody;
+hAD:        reduced  := reduce(exp, vs);
+            code     := appendCode(code, "{x} := {reduced};");
+            if eq(bb, list()) goto cont2 else innBody;
+
+hGoto:      bb       := lookup(head(command), program);
+            if eq(bb, list()) goto cont2 else innBody;
+
+hIf:        exp      := head(command);
+            pp0      := head(tail(command));
+            pp1      := head(tail(tail(command)));
+            if isStatic(exp, division) goto hISA else hIDA;
+hISA:       if eval(exp, vs) goto PP0 else PP1;
+PP0:        bb       := lookup(pp0, program);
+            if eq(bb, list()) goto cont2 else innBody;
+PP1:        bb       := lookup(pp1, program);
+            if eq(bb, list()) goto cont2 else innBody;
+hIDA:       rest     := cons(setdiff(pp0, rest), rest);
+            rest     := cons(setdiff(pp1, rest), rest);
+            pending  := appendPendingUnique(pending, list(pp0, vs), marked, liveVars);
+            pending  := appendPendingUnique(pending, list(pp1, vs), marked, liveVars);
+            reduced  := reduce(exp, vs);
+            labT     := lookupLabel(pp0, compressState(pp0, vs, liveVars));
+            labF     := lookupLabel(pp1, compressState(pp1, vs, liveVars));
+            code     := appendCode(code, "if {reduced} goto {labT} else {labF};");
+            if eq(bb, list()) goto cont2 else innBody;
+
+hReturn:    exp      := head(command);
+            reduced  := reduce(exp, vs);
+            code     := appendCode(code, "return {reduced};");
+            if eq(bb, list()) goto cont2 else innBody;
+
+cont2:      residual := append(residual, setdiff(code, residual));
+            if eq(pending, list()) goto cont1 else outBody;
+cont1:      return residual;
