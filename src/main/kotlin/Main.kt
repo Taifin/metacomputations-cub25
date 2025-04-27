@@ -1,3 +1,4 @@
+import com.xenomachina.argparser.ArgParser
 import interpreter.FlowChartGrammar
 import interpreter.Interpreter
 import me.alllex.parsus.annotations.ExperimentalParsusApi
@@ -9,14 +10,21 @@ import kotlin.io.path.readText
 
 @OptIn(ExperimentalParsusApi::class)
 fun main(args: Array<String>) {
-    val programFile = Paths.get(args[0])
+    val argParser = ArgParser(args)
+    val programFileName by argParser.positional(help = "file to run the interpreter on")
+    val myConfig = object : Interpreter.Config {
+        override val isDebug by argParser.flagging("-d", "--debug", help = "enable debug logging")
+        override val useFullLiveVarAnalysis by argParser.flagging(
+            "-L",
+            "--full-live-vars",
+            help = "enable full live-vars analysis with less compression"
+        )
+    }
+
+    val programFile = Paths.get(programFileName)
     if (programFile.notExists()) {
         println("Input file does not exist!")
         return
-    }
-
-    if (args.size >= 2 && args[1] == "--debug") {
-        Log.enabled = true
     }
 
     val program = programFile.readText()
@@ -30,7 +38,7 @@ fun main(args: Array<String>) {
             }"
         )
     }
-    val interpreter = Interpreter(parsed)
+    val interpreter = Interpreter(parsed, myConfig)
     val result = interpreter.run()
     println("What to do with the interpreted results? (print|prog <file> [read?])")
     val mode = readln()

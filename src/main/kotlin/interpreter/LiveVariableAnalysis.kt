@@ -24,16 +24,16 @@ object LiveVariableAnalysis {
         }
     }
 
-    private fun collectUseDef(block: BasicBlock, division: List<String>): LiveSets {
+    private fun collectUseDef(block: BasicBlock): LiveSets {
         val use = mutableSetOf<Id>()
         val def = mutableSetOf<Id>()
         for (assign in block.assignments ?: emptyList()) {
-            def.add(assign.variable)
             usedVariables(assign.value).forEach {
                 if (it !in def) {
                     use.add(it)
                 }
             }
+            def.add(assign.variable)
         }
 
         usedVariables(when (block.jump) {
@@ -67,12 +67,13 @@ object LiveVariableAnalysis {
         }
     )
 
-    private fun reassignedVals(program: Program) = program.basicBlocks.flatMap { it.assignments?.map { it.variable } ?: emptyList() }.toSet()
-
-    fun analyse(program: Program, division: List<String>): Map<Label, Set<Id>> {
+    fun analyse(config: Interpreter.Config, program: Program, division: List<String>): Map<Label, Set<Id>> {
         val cfg = buildCFG(program, division)
-        val changingVars = reassignedVals(program)
-        val useDefMap = cfg.mapValues { collectUseDef(it.value.block, division) }
+        val useDefMap = cfg.mapValues { collectUseDef(it.value.block) }
+
+        if (!config.useFullLiveVarAnalysis) {
+            return useDefMap.mapValues { it.value.use }
+        }
 
         val inMap = mutableMapOf<Label, Set<Id>>()
         val outMap = mutableMapOf<Label, Set<Id>>()
@@ -101,6 +102,6 @@ object LiveVariableAnalysis {
             }
         } while (changed)
 
-        return inMap.mapValues { it.value.intersect(changingVars) }
+        return inMap.mapValues { it.value }
     }
 }

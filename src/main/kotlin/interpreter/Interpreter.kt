@@ -7,7 +7,18 @@ import util.Log
 import java.nio.file.Paths
 import kotlin.io.path.readText
 
-class Interpreter(private val program: Program) {
+class Interpreter(private val program: Program, private val config: Config) {
+    interface Config {
+        val useFullLiveVarAnalysis: Boolean
+        val isDebug: Boolean
+    }
+
+    private fun log(msg: String) {
+        if (config.isDebug) {
+            Log.log(msg)
+        }
+    }
+
     private val vars = mutableMapOf<String, Any>()
     private val blocks = mutableMapOf<Label, BasicBlock>()
     private val exprParser = object : ExprGrammar<Expr>() {
@@ -88,11 +99,11 @@ class Interpreter(private val program: Program) {
             is Id -> if (idToLit) Literal(value.name) else value
             is Expr -> value
             is Label -> Literal(value.name)
-            is List<*> -> Operation(Builtins.LIST, value.map { toExpr(it!!) })
-            is Set<*> -> Operation(Builtins.SET, value.map { toExpr(it!!) })
+            is List<*> -> Operation(Builtins.LIST, value.map { toExpr(it!!, idToLit) })
+            is Set<*> -> Operation(Builtins.SET, value.map { toExpr(it!!, idToLit) })
             is Map<*, *> -> Operation(
                 Builtins.MAP,
-                value.entries.map { Operation(Builtins.LIST, listOf(toExpr(it.key!!), toExpr(it.value!!))) })
+                value.entries.map { Operation(Builtins.LIST, listOf(toExpr(it.key!!, idToLit), toExpr(it.value!!, idToLit))) })
 
             else -> throw IllegalArgumentException("Value cannot be converted to expression: $value")
         }
@@ -154,6 +165,8 @@ class Interpreter(private val program: Program) {
             Builtins.CONS -> {
                 val list = evaluatedArgs[1] as List<Any>
                 val head = evaluatedArgs[0]
+                // cons(setdiff(rest, pp), rest) -> avoid adding emptyList to rest
+                if (head is List<*> && head.isEmpty()) return list.toMutableList()
                 return mutableListOf(head).also { it.addAll(list) }
             }
 
@@ -165,9 +178,29 @@ class Interpreter(private val program: Program) {
             Builtins.TAIL -> {
                 val list = evaluatedArgs[0] as List<Any>
                 if (list.isEmpty()) {
-                    return list
+                    return list.toMutableList()
                 }
                 return list.drop(1).toMutableList()
+            }
+
+            Builtins.NEXTLABEL -> {
+                val pp = evaluatedArgs[0]
+                val program = evaluatedArgs[1] as Program
+                val list = evaluatedArgs[2] as List<Any>
+                val label: Label = if (pp is String) Label(pp) else pp as Label
+                val labels = program.basicBlocks.map { it.label }
+                var ind = labels.indexOf(label) + 1
+                while (ind < labels.size) {
+                    list.forEach {
+                        val cur: Label = if (it is String) Label(it) else it as Label
+                        if (it == labels[ind]) {
+                            return cur
+                        }
+                    }
+                    ind++
+                }
+                log("No next label found for $pp")
+                return if (pp is String) "error" else Label("error")
             }
 
             Builtins.EQ -> {
@@ -221,6 +254,11 @@ class Interpreter(private val program: Program) {
                 return mutableListOf("${stateToLab[key]!!}:")
             }
 
+            Builtins.ADDTOSTATE -> {
+                val state = evaluatedArgs[0] as Map<String, Any>
+                return state
+            }
+
             Builtins.ISSTATIC -> {
                 val arg = evaluatedArgs[0] as Expr
                 val division = evaluatedArgs[1] as List<String>
@@ -252,22 +290,26 @@ class Interpreter(private val program: Program) {
                     is List<*> -> {
                         collection as MutableList<Any>
                         if (elem is List<*> && elem.isEmpty()) return collection
-                        // TODO: this is to avoid adding empty list after setdiff
-                        collection.add(elem)
+                        // this is to avoid adding emptyList after setdiff
+                        return collection.toMutableList().also { it.add(elem) }
                     }
 
                     is Map<*, *> -> {
                         collection as MutableMap<String, Any>
                         elem as List<Any>
-                        when (val id = elem[0]) {
-                            is Id -> collection[id.name] = elem[1]
-                            else -> collection[id as String] = elem[1]
+                        if (elem[0] == Id("rest")) {
+                            println()
                         }
+                        val copy = collection.toMutableMap()
+                        when (val id = elem[0]) {
+                            is Id -> copy[id.name] = elem[1]
+                            else -> copy[id as String] = elem[1]
+                        }
+                        return copy
                     }
 
                     else -> throw IllegalArgumentException("Argument is not a collection: $collection")
                 }
-                return collection
             }
 
             Builtins.APPENDCODE -> {
@@ -277,7 +319,7 @@ class Interpreter(private val program: Program) {
                     val key = it.groupValues[1]
                     vars[key]?.toString() ?: it.value
                 }
-                return code.also { it.add(replaced) }
+                return code.also { it.add(replaced) }.toMutableList()
             }
 
 
@@ -305,7 +347,7 @@ class Interpreter(private val program: Program) {
                 val vs = evaluatedArgs[1]
                 val key = pp.toString() to vs.toString()
                 if (!stateToLab.containsKey(key)) {
-                    stateToLab[key] = generateLabel()
+                    stateToLab[key] = generateLabel() // + "_" + pp.toString() + "_" + vs.toString()
                 }
                 return stateToLab[pp.toString() to vs.toString()]!!
             }
@@ -326,30 +368,82 @@ class Interpreter(private val program: Program) {
             Builtins.FINDPROJECTIONS -> {
                 val program = evaluatedArgs[0] as Program
                 val division = evaluatedArgs[1] as List<String>
-                val liveVars = LiveVariableAnalysis.analyse(program, division)
+                val liveVars = LiveVariableAnalysis.analyse(config, program, division)
                 val mapped = liveVars.mapValues { it.value.intersect(division.map { Id(it) }.toSet()) }
                 return mapped
             }
 
             Builtins.COMPRESSSTATE -> {
-                // compiled mix uses strings instead of labels and ids
+                // the compiled mix uses strings instead of labels and ids
                 val arg0 = evaluatedArgs[0]
                 if (arg0 is String) {
                     val pp = arg0
                     val state = evaluatedArgs[1] as Map<String, Any>
                     val liveVars = evaluatedArgs[2] as Map<String, Set<String>>
                     val varsAtPp = liveVars[pp]!!
-                    return state.filterKeys { key -> varsAtPp.contains(key) }
+                    return state.filterKeys { key -> varsAtPp.contains(key) }.toMutableMap()
                 } else {
                     val pp = arg0 as Label
                     val state = evaluatedArgs[1] as Map<String, Any>
                     val liveVars = evaluatedArgs[2] as Map<Label, Set<Id>>
                     val varsAtPp = liveVars[pp]!!
                     val compressed = state.filterKeys { key -> varsAtPp.contains(Id(key)) }
-                    return compressed
+                    return compressed.toMutableMap()
+                }
+            }
+
+            Builtins.APPENDPENDINGUNIQUE -> {
+                val pending = evaluatedArgs[0] as MutableList<List<Any>>
+                val ppState = evaluatedArgs[1] as List<Any>
+                val state = ppState[1] as Map<String, Any>
+                val marked = evaluatedArgs[2] as List<List<Any>>
+                val pp = ppState[0]
+
+                if (pp is Label) {
+                    val cPending = pending.map {
+                        it[0] as Label to it[1] as Map<String, Any>
+                    }
+                    val cMarked = marked.map {
+                        it[0] as Label to it[1] as Map<String, Any>
+                    }
+                    val liveVars = evaluatedArgs[3] as Map<Label, Set<Id>>
+                    if (containsWithCompressedState(pp, state, cPending, liveVars)) {
+                        return pending
+                    }
+                    if (containsWithCompressedState(pp, state, cMarked, liveVars)) {
+                        return pending
+                    }
+                    return mutableListOf(mutableListOf(pp, state)) + pending
+                } else {
+                    val cPending = pending.map {
+                        Label(it[0] as String) to it[1] as Map<String, Any>
+                    }
+                    val cMarked = marked.map {
+                        Label(it[0] as String) to it[1] as Map<String, Any>
+                    }
+                    val liveVars = evaluatedArgs[3] as Map<String, Set<String>>
+                    val cLiveVars = liveVars.map { (key, value) ->
+                        Label(key) to value.map { Id(it) }.toSet()
+                    }.toMap()
+                    if (containsWithCompressedState(Label(pp as String), state, cPending, cLiveVars)) {
+                        return pending
+                    }
+                    if (containsWithCompressedState(Label(pp as String), state, cMarked, cLiveVars)) {
+                        return pending
+                    }
+                    return mutableListOf(mutableListOf(pp, state)) + pending
                 }
             }
         }
+    }
+
+    private fun containsWithCompressedState(pp: Label, state: Map<String, Any>, list: List<Pair<Label, Map<String, Any>>>, liveVars: Map<Label, Set<Id>>): Boolean {
+        val varsAtPp = liveVars[pp]!!
+        val stateCompressed = state.filterKeys { key: String -> varsAtPp.contains(Id(key)) }
+        val listCompressed = list.map { (mPP, mState) ->
+            mPP to mState.filterKeys { key: String -> liveVars[mPP]!!.contains(Id(key)) }
+        }
+        return (pp to stateCompressed) in listCompressed
     }
 
     private fun evalExpr(expr: Expr, variables: MutableMap<String, Any>): Any {
@@ -361,7 +455,7 @@ class Interpreter(private val program: Program) {
                 }
                 val value = variables[expr.name]!!
                 if (value is MutableMap<*, *>) {
-                    return value.toMutableMap() // explicit copy for vs in mix
+                    return value.toMutableMap()
                 } else {
                     return value
                 }
@@ -391,7 +485,7 @@ class Interpreter(private val program: Program) {
             for (assignment in basicBlock.assignments) {
                 vars[assignment.variable.name] = evalExpr(assignment.value, vars)
                 if (assignment.variable.name == "command" && assignment.value is Operation && assignment.value.name == Builtins.TOLIST) {
-                    Log.log("Processing inner instruction: ${vars[assignment.variable.name]}")
+                    log("Processing inner instruction: ${vars[assignment.variable.name]}")
                 }
             }
         }
@@ -403,7 +497,7 @@ class Interpreter(private val program: Program) {
         resolveLabels()
         var currentLabel = program.basicBlocks.first().label
         while (true) {
-            Log.log("At label $currentLabel")
+            log("At label $currentLabel")
             val currentBlock = blocks[currentLabel]!!
             val newLabel = runBlock(currentBlock)
 

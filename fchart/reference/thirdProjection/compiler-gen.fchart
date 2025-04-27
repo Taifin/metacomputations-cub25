@@ -1,0 +1,964 @@
+read (vs);
+lab0:	pending := list(list("begin",vs));
+		marked := list();
+		residual := list();
+		current := head(pending);
+		pending := tail(pending);
+		marked := cons(current,marked);
+		targetPP := head(current);
+		vs := head(tail(current));
+		code := initialCode(targetPP,compressState(targetPP,vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		if eq("begin",targetPP) goto lab1 else lab2;
+
+lab2:	if eq("error",targetPP) goto lab3 else lab4;
+
+lab4:	if eq("error",targetPP) goto lab3 else lab4;
+
+lab3:	reduced := reduce("\"ERROR\"",vs);
+		code := appendCode(code,"return {reduced};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab6;
+
+lab6:	current := head(pending);
+		pending := tail(pending);
+		marked := cons(current,marked);
+		targetPP := head(current);
+		vs := head(tail(current));
+		code := initialCode(targetPP,compressState(targetPP,vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		if eq("begin",targetPP) goto lab1 else lab2;
+
+lab5:	return residual;
+
+lab1:	reduced := reduce("findProjections(program,division)",vs);
+		code := appendCode(code,"liveVars := {reduced};");
+		vs := append(vs,list("startPP",eval("head(head(toList(program)))",vs)));
+		vs := append(vs,list("rest",eval("list(startPP)",vs)));
+		reduced := reduce("list(list(startPP,vs))",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("list()",vs);
+		code := appendCode(code,"marked := {reduced};");
+		reduced := reduce("list()",vs);
+		code := appendCode(code,"residual := {reduced};");
+		reduced := reduce("head(pending)",vs);
+		code := appendCode(code,"current := {reduced};");
+		reduced := reduce("tail(pending)",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("cons(current,marked)",vs);
+		code := appendCode(code,"marked := {reduced};");
+		reduced := reduce("head(current)",vs);
+		code := appendCode(code,"targetPP := {reduced};");
+		vs := append(vs,list("rest",eval("rest",vs)));
+		reduced := reduce("head(tail(current))",vs);
+		code := appendCode(code,"vs := {reduced};");
+		reduced := reduce("initialCode(targetPP,compressState(targetPP,vs,liveVars))",vs);
+		code := appendCode(code,"code := {reduced};");
+		vs := append(vs,list("pp",eval("startPP",vs)));
+		vs := append(vs,list("bb",eval("lookup(pp,program)",vs)));
+		pending := appendPendingUnique(pending,list("innBody",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("lookupPPB",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eq(pp,targetPP)",vs);
+		labT := lookupLabel("innBody",compressState("innBody",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("lookupPPB",compressState("lookupPPB",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab7;
+
+lab7:	current := head(pending);
+		pending := tail(pending);
+		marked := cons(current,marked);
+		targetPP := head(current);
+		vs := head(tail(current));
+		code := initialCode(targetPP,compressState(targetPP,vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		if eq("begin",targetPP) goto lab8 else lab9;
+
+lab9:	if eq("lookupPPB",targetPP) goto lab10 else lab11;
+
+lab11:	if eq("innBody",targetPP) goto lab12 else lab13;
+
+lab13:	if eq("error",targetPP) goto lab14 else lab15;
+
+lab15:	if eq("error",targetPP) goto lab14 else lab15;
+
+lab14:	reduced := reduce("\"ERROR\"",vs);
+		code := appendCode(code,"return {reduced};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab7;
+
+lab12:	vs := append(vs,list("command",eval("toList(head(bb))",vs)));
+		vs := append(vs,list("bb",eval("tail(bb)",vs)));
+		vs := append(vs,list("fst",eval("head(command)",vs)));
+		vs := append(vs,list("command",eval("tail(command)",vs)));
+		if eval("eq(fst,\":=\")",vs) goto lab16 else lab17;
+
+lab17:	if eval("eq(fst,\"goto\")",vs) goto lab18 else lab19;
+
+lab19:	if eval("eq(fst,\"if\")",vs) goto lab20 else lab21;
+
+lab21:	if eval("eq(fst,\"return\")",vs) goto lab22 else lab23;
+
+lab23:	reduced := reduce("\"ERROR\"",vs);
+		code := appendCode(code,"return {reduced};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab7;
+
+lab22:	vs := append(vs,list("exp",eval("head(command)",vs)));
+		reduced := reduce("reduce(exp,vs)",vs);
+		code := appendCode(code,"reduced := {reduced};");
+		reduced := reduce("appendCode(code,\"return {reduced};\")",vs);
+		code := appendCode(code,"code := {reduced};");
+		if eval("eq(bb,list())",vs) goto lab24 else lab25;
+
+lab25:	vs := append(vs,list("command",eval("toList(head(bb))",vs)));
+		vs := append(vs,list("bb",eval("tail(bb)",vs)));
+		vs := append(vs,list("fst",eval("head(command)",vs)));
+		vs := append(vs,list("command",eval("tail(command)",vs)));
+		if eval("eq(fst,\":=\")",vs) goto lab16 else lab17;
+
+lab24:	reduced := reduce("append(residual,setdiff(code,residual))",vs);
+		code := appendCode(code,"residual := {reduced};");
+		pending := appendPendingUnique(pending,list("cont1",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("outBody",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eq(pending,list())",vs);
+		labT := lookupLabel("cont1",compressState("cont1",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("outBody",compressState("outBody",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab26;
+
+lab26:	current := head(pending);
+		pending := tail(pending);
+		marked := cons(current,marked);
+		targetPP := head(current);
+		vs := head(tail(current));
+		code := initialCode(targetPP,compressState(targetPP,vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		if eq("begin",targetPP) goto lab27 else lab28;
+
+lab28:	if eq("outBody",targetPP) goto lab29 else lab30;
+
+lab30:	if eq("lookupPPB",targetPP) goto lab31 else lab32;
+
+lab32:	if eq("innBody",targetPP) goto lab33 else lab34;
+
+lab34:	if eq("cont1",targetPP) goto lab35 else lab36;
+
+lab36:	if eq("error",targetPP) goto lab37 else lab38;
+
+lab38:	if eq("cont1",targetPP) goto lab35 else lab36;
+
+lab37:	reduced := reduce("\"ERROR\"",vs);
+		code := appendCode(code,"return {reduced};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab26;
+
+lab35:	reduced := reduce("residual",vs);
+		code := appendCode(code,"return {reduced};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab26;
+
+lab33:	vs := append(vs,list("command",eval("toList(head(bb))",vs)));
+		vs := append(vs,list("bb",eval("tail(bb)",vs)));
+		vs := append(vs,list("fst",eval("head(command)",vs)));
+		vs := append(vs,list("command",eval("tail(command)",vs)));
+		if eval("eq(fst,\":=\")",vs) goto lab39 else lab40;
+
+lab40:	if eval("eq(fst,\"goto\")",vs) goto lab41 else lab42;
+
+lab42:	if eval("eq(fst,\"if\")",vs) goto lab43 else lab44;
+
+lab44:	if eval("eq(fst,\"return\")",vs) goto lab45 else lab46;
+
+lab46:	reduced := reduce("\"ERROR\"",vs);
+		code := appendCode(code,"return {reduced};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab26;
+
+lab45:	vs := append(vs,list("exp",eval("head(command)",vs)));
+		reduced := reduce("reduce(exp,vs)",vs);
+		code := appendCode(code,"reduced := {reduced};");
+		reduced := reduce("appendCode(code,\"return {reduced};\")",vs);
+		code := appendCode(code,"code := {reduced};");
+		if eval("eq(bb,list())",vs) goto lab47 else lab48;
+
+lab48:	vs := append(vs,list("command",eval("toList(head(bb))",vs)));
+		vs := append(vs,list("bb",eval("tail(bb)",vs)));
+		vs := append(vs,list("fst",eval("head(command)",vs)));
+		vs := append(vs,list("command",eval("tail(command)",vs)));
+		if eval("eq(fst,\":=\")",vs) goto lab39 else lab40;
+
+lab47:	reduced := reduce("append(residual,setdiff(code,residual))",vs);
+		code := appendCode(code,"residual := {reduced};");
+		pending := appendPendingUnique(pending,list("cont1",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("outBody",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eq(pending,list())",vs);
+		labT := lookupLabel("cont1",compressState("cont1",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("outBody",compressState("outBody",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab26;
+
+lab43:	vs := append(vs,list("exp",eval("head(command)",vs)));
+		vs := append(vs,list("pp0",eval("head(tail(command))",vs)));
+		vs := append(vs,list("pp1",eval("head(tail(tail(command)))",vs)));
+		if eval("isStatic(exp,division)",vs) goto lab49 else lab50;
+
+lab50:	vs := append(vs,list("rest",eval("append(rest,setdiff(pp0,rest))",vs)));
+		vs := append(vs,list("rest",eval("append(rest,setdiff(pp1,rest))",vs)));
+		reduced := reduce("appendPendingUnique(pending,list(pp0,vs),marked,liveVars)",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("appendPendingUnique(pending,list(pp1,vs),marked,liveVars)",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("reduce(exp,vs)",vs);
+		code := appendCode(code,"reduced := {reduced};");
+		reduced := reduce("lookupLabel(pp0,compressState(pp0,vs,liveVars))",vs);
+		code := appendCode(code,"labT := {reduced};");
+		reduced := reduce("lookupLabel(pp1,compressState(pp1,vs,liveVars))",vs);
+		code := appendCode(code,"labF := {reduced};");
+		reduced := reduce("appendCode(code,\"if {reduced} goto {labT} else {labF};\")",vs);
+		code := appendCode(code,"code := {reduced};");
+		if eval("eq(bb,list())",vs) goto lab47 else lab48;
+
+lab49:	pending := appendPendingUnique(pending,list("PP0",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("PP1",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eval(exp,vs)",vs);
+		labT := lookupLabel("PP0",compressState("PP0",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("PP1",compressState("PP1",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab51;
+
+lab51:	current := head(pending);
+		pending := tail(pending);
+		marked := cons(current,marked);
+		targetPP := head(current);
+		vs := head(tail(current));
+		code := initialCode(targetPP,compressState(targetPP,vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		if eq("begin",targetPP) goto lab52 else lab53;
+
+lab53:	if eq("outBody",targetPP) goto lab54 else lab55;
+
+lab55:	if eq("lookupPPB",targetPP) goto lab56 else lab57;
+
+lab57:	if eq("innBody",targetPP) goto lab58 else lab59;
+
+lab59:	if eq("PP0",targetPP) goto lab60 else lab61;
+
+lab61:	if eq("PP1",targetPP) goto lab62 else lab63;
+
+lab63:	if eq("cont1",targetPP) goto lab64 else lab65;
+
+lab65:	if eq("error",targetPP) goto lab66 else lab67;
+
+lab67:	if eq("PP0",targetPP) goto lab60 else lab61;
+
+lab66:	reduced := reduce("\"ERROR\"",vs);
+		code := appendCode(code,"return {reduced};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab51;
+
+lab64:	reduced := reduce("residual",vs);
+		code := appendCode(code,"return {reduced};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab51;
+
+lab62:	vs := append(vs,list("bb",eval("lookup(pp1,program)",vs)));
+		if eval("eq(bb,list())",vs) goto lab68 else lab69;
+
+lab69:	vs := append(vs,list("command",eval("toList(head(bb))",vs)));
+		vs := append(vs,list("bb",eval("tail(bb)",vs)));
+		vs := append(vs,list("fst",eval("head(command)",vs)));
+		vs := append(vs,list("command",eval("tail(command)",vs)));
+		if eval("eq(fst,\":=\")",vs) goto lab70 else lab71;
+
+lab71:	if eval("eq(fst,\"goto\")",vs) goto lab72 else lab73;
+
+lab73:	if eval("eq(fst,\"if\")",vs) goto lab74 else lab75;
+
+lab75:	if eval("eq(fst,\"return\")",vs) goto lab76 else lab77;
+
+lab77:	reduced := reduce("\"ERROR\"",vs);
+		code := appendCode(code,"return {reduced};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab51;
+
+lab76:	vs := append(vs,list("exp",eval("head(command)",vs)));
+		reduced := reduce("reduce(exp,vs)",vs);
+		code := appendCode(code,"reduced := {reduced};");
+		reduced := reduce("appendCode(code,\"return {reduced};\")",vs);
+		code := appendCode(code,"code := {reduced};");
+		if eval("eq(bb,list())",vs) goto lab68 else lab69;
+
+lab74:	vs := append(vs,list("exp",eval("head(command)",vs)));
+		vs := append(vs,list("pp0",eval("head(tail(command))",vs)));
+		vs := append(vs,list("pp1",eval("head(tail(tail(command)))",vs)));
+		if eval("isStatic(exp,division)",vs) goto lab78 else lab79;
+
+lab79:	vs := append(vs,list("rest",eval("append(rest,setdiff(pp0,rest))",vs)));
+		vs := append(vs,list("rest",eval("append(rest,setdiff(pp1,rest))",vs)));
+		reduced := reduce("appendPendingUnique(pending,list(pp0,vs),marked,liveVars)",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("appendPendingUnique(pending,list(pp1,vs),marked,liveVars)",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("reduce(exp,vs)",vs);
+		code := appendCode(code,"reduced := {reduced};");
+		reduced := reduce("lookupLabel(pp0,compressState(pp0,vs,liveVars))",vs);
+		code := appendCode(code,"labT := {reduced};");
+		reduced := reduce("lookupLabel(pp1,compressState(pp1,vs,liveVars))",vs);
+		code := appendCode(code,"labF := {reduced};");
+		reduced := reduce("appendCode(code,\"if {reduced} goto {labT} else {labF};\")",vs);
+		code := appendCode(code,"code := {reduced};");
+		if eval("eq(bb,list())",vs) goto lab68 else lab69;
+
+lab78:	pending := appendPendingUnique(pending,list("PP0",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("PP1",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eval(exp,vs)",vs);
+		labT := lookupLabel("PP0",compressState("PP0",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("PP1",compressState("PP1",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab51;
+
+lab72:	vs := append(vs,list("bb",eval("lookup(head(command),program)",vs)));
+		if eval("eq(bb,list())",vs) goto lab68 else lab69;
+
+lab70:	vs := append(vs,list("x",eval("head(command)",vs)));
+		vs := append(vs,list("exp",eval("head(tail(command))",vs)));
+		if eval("isStatic(x,division)",vs) goto lab80 else lab81;
+
+lab81:	reduced := reduce("reduce(exp,vs)",vs);
+		code := appendCode(code,"reduced := {reduced};");
+		reduced := reduce("appendCode(code,\"{x} := {reduced};\")",vs);
+		code := appendCode(code,"code := {reduced};");
+		if eval("eq(bb,list())",vs) goto lab68 else lab69;
+
+lab80:	reduced := reduce("append(vs,list(x,eval(exp,vs)))",vs);
+		code := appendCode(code,"vs := {reduced};");
+		if eval("eq(bb,list())",vs) goto lab68 else lab69;
+
+lab68:	reduced := reduce("append(residual,setdiff(code,residual))",vs);
+		code := appendCode(code,"residual := {reduced};");
+		pending := appendPendingUnique(pending,list("cont1",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("outBody",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eq(pending,list())",vs);
+		labT := lookupLabel("cont1",compressState("cont1",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("outBody",compressState("outBody",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab51;
+
+lab60:	vs := append(vs,list("bb",eval("lookup(pp0,program)",vs)));
+		if eval("eq(bb,list())",vs) goto lab68 else lab69;
+
+lab58:	vs := append(vs,list("command",eval("toList(head(bb))",vs)));
+		vs := append(vs,list("bb",eval("tail(bb)",vs)));
+		vs := append(vs,list("fst",eval("head(command)",vs)));
+		vs := append(vs,list("command",eval("tail(command)",vs)));
+		if eval("eq(fst,\":=\")",vs) goto lab70 else lab71;
+
+lab56:	vs := append(vs,list("pp",eval("nextLabel(pp,program,rest)",vs)));
+		vs := append(vs,list("bb",eval("lookup(pp,program)",vs)));
+		pending := appendPendingUnique(pending,list("innBody",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("lookupPPB",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eq(pp,targetPP)",vs);
+		labT := lookupLabel("innBody",compressState("innBody",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("lookupPPB",compressState("lookupPPB",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab51;
+
+lab54:	reduced := reduce("head(pending)",vs);
+		code := appendCode(code,"current := {reduced};");
+		reduced := reduce("tail(pending)",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("cons(current,marked)",vs);
+		code := appendCode(code,"marked := {reduced};");
+		reduced := reduce("head(current)",vs);
+		code := appendCode(code,"targetPP := {reduced};");
+		vs := append(vs,list("rest",eval("rest",vs)));
+		reduced := reduce("head(tail(current))",vs);
+		code := appendCode(code,"vs := {reduced};");
+		reduced := reduce("initialCode(targetPP,compressState(targetPP,vs,liveVars))",vs);
+		code := appendCode(code,"code := {reduced};");
+		vs := append(vs,list("pp",eval("startPP",vs)));
+		vs := append(vs,list("bb",eval("lookup(pp,program)",vs)));
+		pending := appendPendingUnique(pending,list("innBody",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("lookupPPB",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eq(pp,targetPP)",vs);
+		labT := lookupLabel("innBody",compressState("innBody",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("lookupPPB",compressState("lookupPPB",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab51;
+
+lab52:	reduced := reduce("findProjections(program,division)",vs);
+		code := appendCode(code,"liveVars := {reduced};");
+		vs := append(vs,list("startPP",eval("head(head(toList(program)))",vs)));
+		vs := append(vs,list("rest",eval("list(startPP)",vs)));
+		reduced := reduce("list(list(startPP,vs))",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("list()",vs);
+		code := appendCode(code,"marked := {reduced};");
+		reduced := reduce("list()",vs);
+		code := appendCode(code,"residual := {reduced};");
+		reduced := reduce("head(pending)",vs);
+		code := appendCode(code,"current := {reduced};");
+		reduced := reduce("tail(pending)",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("cons(current,marked)",vs);
+		code := appendCode(code,"marked := {reduced};");
+		reduced := reduce("head(current)",vs);
+		code := appendCode(code,"targetPP := {reduced};");
+		vs := append(vs,list("rest",eval("rest",vs)));
+		reduced := reduce("head(tail(current))",vs);
+		code := appendCode(code,"vs := {reduced};");
+		reduced := reduce("initialCode(targetPP,compressState(targetPP,vs,liveVars))",vs);
+		code := appendCode(code,"code := {reduced};");
+		vs := append(vs,list("pp",eval("startPP",vs)));
+		vs := append(vs,list("bb",eval("lookup(pp,program)",vs)));
+		pending := appendPendingUnique(pending,list("innBody",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("lookupPPB",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eq(pp,targetPP)",vs);
+		labT := lookupLabel("innBody",compressState("innBody",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("lookupPPB",compressState("lookupPPB",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab51;
+
+lab41:	vs := append(vs,list("bb",eval("lookup(head(command),program)",vs)));
+		if eval("eq(bb,list())",vs) goto lab47 else lab48;
+
+lab39:	vs := append(vs,list("x",eval("head(command)",vs)));
+		vs := append(vs,list("exp",eval("head(tail(command))",vs)));
+		if eval("isStatic(x,division)",vs) goto lab82 else lab83;
+
+lab83:	reduced := reduce("reduce(exp,vs)",vs);
+		code := appendCode(code,"reduced := {reduced};");
+		reduced := reduce("appendCode(code,\"{x} := {reduced};\")",vs);
+		code := appendCode(code,"code := {reduced};");
+		if eval("eq(bb,list())",vs) goto lab47 else lab48;
+
+lab82:	reduced := reduce("append(vs,list(x,eval(exp,vs)))",vs);
+		code := appendCode(code,"vs := {reduced};");
+		if eval("eq(bb,list())",vs) goto lab47 else lab48;
+
+lab31:	vs := append(vs,list("pp",eval("nextLabel(pp,program,rest)",vs)));
+		vs := append(vs,list("bb",eval("lookup(pp,program)",vs)));
+		pending := appendPendingUnique(pending,list("innBody",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("lookupPPB",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eq(pp,targetPP)",vs);
+		labT := lookupLabel("innBody",compressState("innBody",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("lookupPPB",compressState("lookupPPB",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab26;
+
+lab29:	reduced := reduce("head(pending)",vs);
+		code := appendCode(code,"current := {reduced};");
+		reduced := reduce("tail(pending)",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("cons(current,marked)",vs);
+		code := appendCode(code,"marked := {reduced};");
+		reduced := reduce("head(current)",vs);
+		code := appendCode(code,"targetPP := {reduced};");
+		vs := append(vs,list("rest",eval("rest",vs)));
+		reduced := reduce("head(tail(current))",vs);
+		code := appendCode(code,"vs := {reduced};");
+		reduced := reduce("initialCode(targetPP,compressState(targetPP,vs,liveVars))",vs);
+		code := appendCode(code,"code := {reduced};");
+		vs := append(vs,list("pp",eval("startPP",vs)));
+		vs := append(vs,list("bb",eval("lookup(pp,program)",vs)));
+		pending := appendPendingUnique(pending,list("innBody",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("lookupPPB",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eq(pp,targetPP)",vs);
+		labT := lookupLabel("innBody",compressState("innBody",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("lookupPPB",compressState("lookupPPB",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab26;
+
+lab27:	reduced := reduce("findProjections(program,division)",vs);
+		code := appendCode(code,"liveVars := {reduced};");
+		vs := append(vs,list("startPP",eval("head(head(toList(program)))",vs)));
+		vs := append(vs,list("rest",eval("list(startPP)",vs)));
+		reduced := reduce("list(list(startPP,vs))",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("list()",vs);
+		code := appendCode(code,"marked := {reduced};");
+		reduced := reduce("list()",vs);
+		code := appendCode(code,"residual := {reduced};");
+		reduced := reduce("head(pending)",vs);
+		code := appendCode(code,"current := {reduced};");
+		reduced := reduce("tail(pending)",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("cons(current,marked)",vs);
+		code := appendCode(code,"marked := {reduced};");
+		reduced := reduce("head(current)",vs);
+		code := appendCode(code,"targetPP := {reduced};");
+		vs := append(vs,list("rest",eval("rest",vs)));
+		reduced := reduce("head(tail(current))",vs);
+		code := appendCode(code,"vs := {reduced};");
+		reduced := reduce("initialCode(targetPP,compressState(targetPP,vs,liveVars))",vs);
+		code := appendCode(code,"code := {reduced};");
+		vs := append(vs,list("pp",eval("startPP",vs)));
+		vs := append(vs,list("bb",eval("lookup(pp,program)",vs)));
+		pending := appendPendingUnique(pending,list("innBody",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("lookupPPB",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eq(pp,targetPP)",vs);
+		labT := lookupLabel("innBody",compressState("innBody",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("lookupPPB",compressState("lookupPPB",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab26;
+
+lab20:	vs := append(vs,list("exp",eval("head(command)",vs)));
+		vs := append(vs,list("pp0",eval("head(tail(command))",vs)));
+		vs := append(vs,list("pp1",eval("head(tail(tail(command)))",vs)));
+		if eval("isStatic(exp,division)",vs) goto lab84 else lab85;
+
+lab85:	vs := append(vs,list("rest",eval("append(rest,setdiff(pp0,rest))",vs)));
+		vs := append(vs,list("rest",eval("append(rest,setdiff(pp1,rest))",vs)));
+		reduced := reduce("appendPendingUnique(pending,list(pp0,vs),marked,liveVars)",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("appendPendingUnique(pending,list(pp1,vs),marked,liveVars)",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("reduce(exp,vs)",vs);
+		code := appendCode(code,"reduced := {reduced};");
+		reduced := reduce("lookupLabel(pp0,compressState(pp0,vs,liveVars))",vs);
+		code := appendCode(code,"labT := {reduced};");
+		reduced := reduce("lookupLabel(pp1,compressState(pp1,vs,liveVars))",vs);
+		code := appendCode(code,"labF := {reduced};");
+		reduced := reduce("appendCode(code,\"if {reduced} goto {labT} else {labF};\")",vs);
+		code := appendCode(code,"code := {reduced};");
+		if eval("eq(bb,list())",vs) goto lab24 else lab25;
+
+lab84:	pending := appendPendingUnique(pending,list("PP0",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("PP1",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eval(exp,vs)",vs);
+		labT := lookupLabel("PP0",compressState("PP0",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("PP1",compressState("PP1",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab86;
+
+lab86:	current := head(pending);
+		pending := tail(pending);
+		marked := cons(current,marked);
+		targetPP := head(current);
+		vs := head(tail(current));
+		code := initialCode(targetPP,compressState(targetPP,vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		if eq("begin",targetPP) goto lab87 else lab88;
+
+lab88:	if eq("lookupPPB",targetPP) goto lab89 else lab90;
+
+lab90:	if eq("innBody",targetPP) goto lab91 else lab92;
+
+lab92:	if eq("PP0",targetPP) goto lab93 else lab94;
+
+lab94:	if eq("PP1",targetPP) goto lab95 else lab96;
+
+lab96:	if eq("error",targetPP) goto lab97 else lab98;
+
+lab98:	if eq("PP0",targetPP) goto lab93 else lab94;
+
+lab97:	reduced := reduce("\"ERROR\"",vs);
+		code := appendCode(code,"return {reduced};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab86;
+
+lab95:	vs := append(vs,list("bb",eval("lookup(pp1,program)",vs)));
+		if eval("eq(bb,list())",vs) goto lab99 else lab100;
+
+lab100:	vs := append(vs,list("command",eval("toList(head(bb))",vs)));
+		vs := append(vs,list("bb",eval("tail(bb)",vs)));
+		vs := append(vs,list("fst",eval("head(command)",vs)));
+		vs := append(vs,list("command",eval("tail(command)",vs)));
+		if eval("eq(fst,\":=\")",vs) goto lab101 else lab102;
+
+lab102:	if eval("eq(fst,\"goto\")",vs) goto lab103 else lab104;
+
+lab104:	if eval("eq(fst,\"if\")",vs) goto lab105 else lab106;
+
+lab106:	if eval("eq(fst,\"return\")",vs) goto lab107 else lab108;
+
+lab108:	reduced := reduce("\"ERROR\"",vs);
+		code := appendCode(code,"return {reduced};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab86;
+
+lab107:	vs := append(vs,list("exp",eval("head(command)",vs)));
+		reduced := reduce("reduce(exp,vs)",vs);
+		code := appendCode(code,"reduced := {reduced};");
+		reduced := reduce("appendCode(code,\"return {reduced};\")",vs);
+		code := appendCode(code,"code := {reduced};");
+		if eval("eq(bb,list())",vs) goto lab99 else lab100;
+
+lab105:	vs := append(vs,list("exp",eval("head(command)",vs)));
+		vs := append(vs,list("pp0",eval("head(tail(command))",vs)));
+		vs := append(vs,list("pp1",eval("head(tail(tail(command)))",vs)));
+		if eval("isStatic(exp,division)",vs) goto lab109 else lab110;
+
+lab110:	vs := append(vs,list("rest",eval("append(rest,setdiff(pp0,rest))",vs)));
+		vs := append(vs,list("rest",eval("append(rest,setdiff(pp1,rest))",vs)));
+		reduced := reduce("appendPendingUnique(pending,list(pp0,vs),marked,liveVars)",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("appendPendingUnique(pending,list(pp1,vs),marked,liveVars)",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("reduce(exp,vs)",vs);
+		code := appendCode(code,"reduced := {reduced};");
+		reduced := reduce("lookupLabel(pp0,compressState(pp0,vs,liveVars))",vs);
+		code := appendCode(code,"labT := {reduced};");
+		reduced := reduce("lookupLabel(pp1,compressState(pp1,vs,liveVars))",vs);
+		code := appendCode(code,"labF := {reduced};");
+		reduced := reduce("appendCode(code,\"if {reduced} goto {labT} else {labF};\")",vs);
+		code := appendCode(code,"code := {reduced};");
+		if eval("eq(bb,list())",vs) goto lab99 else lab100;
+
+lab109:	pending := appendPendingUnique(pending,list("PP0",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("PP1",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eval(exp,vs)",vs);
+		labT := lookupLabel("PP0",compressState("PP0",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("PP1",compressState("PP1",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab86;
+
+lab103:	vs := append(vs,list("bb",eval("lookup(head(command),program)",vs)));
+		if eval("eq(bb,list())",vs) goto lab99 else lab100;
+
+lab101:	vs := append(vs,list("x",eval("head(command)",vs)));
+		vs := append(vs,list("exp",eval("head(tail(command))",vs)));
+		if eval("isStatic(x,division)",vs) goto lab111 else lab112;
+
+lab112:	reduced := reduce("reduce(exp,vs)",vs);
+		code := appendCode(code,"reduced := {reduced};");
+		reduced := reduce("appendCode(code,\"{x} := {reduced};\")",vs);
+		code := appendCode(code,"code := {reduced};");
+		if eval("eq(bb,list())",vs) goto lab99 else lab100;
+
+lab111:	reduced := reduce("append(vs,list(x,eval(exp,vs)))",vs);
+		code := appendCode(code,"vs := {reduced};");
+		if eval("eq(bb,list())",vs) goto lab99 else lab100;
+
+lab99:	reduced := reduce("append(residual,setdiff(code,residual))",vs);
+		code := appendCode(code,"residual := {reduced};");
+		pending := appendPendingUnique(pending,list("cont1",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("outBody",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eq(pending,list())",vs);
+		labT := lookupLabel("cont1",compressState("cont1",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("outBody",compressState("outBody",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab113;
+
+lab113:	current := head(pending);
+		pending := tail(pending);
+		marked := cons(current,marked);
+		targetPP := head(current);
+		vs := head(tail(current));
+		code := initialCode(targetPP,compressState(targetPP,vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		if eq("begin",targetPP) goto lab114 else lab115;
+
+lab115:	if eq("outBody",targetPP) goto lab116 else lab117;
+
+lab117:	if eq("lookupPPB",targetPP) goto lab118 else lab119;
+
+lab119:	if eq("innBody",targetPP) goto lab120 else lab121;
+
+lab121:	if eq("PP0",targetPP) goto lab122 else lab123;
+
+lab123:	if eq("PP1",targetPP) goto lab124 else lab125;
+
+lab125:	if eq("cont1",targetPP) goto lab126 else lab127;
+
+lab127:	if eq("error",targetPP) goto lab128 else lab129;
+
+lab129:	if eq("PP0",targetPP) goto lab122 else lab123;
+
+lab128:	reduced := reduce("\"ERROR\"",vs);
+		code := appendCode(code,"return {reduced};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab113;
+
+lab126:	reduced := reduce("residual",vs);
+		code := appendCode(code,"return {reduced};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab113;
+
+lab124:	vs := append(vs,list("bb",eval("lookup(pp1,program)",vs)));
+		if eval("eq(bb,list())",vs) goto lab130 else lab131;
+
+lab131:	vs := append(vs,list("command",eval("toList(head(bb))",vs)));
+		vs := append(vs,list("bb",eval("tail(bb)",vs)));
+		vs := append(vs,list("fst",eval("head(command)",vs)));
+		vs := append(vs,list("command",eval("tail(command)",vs)));
+		if eval("eq(fst,\":=\")",vs) goto lab132 else lab133;
+
+lab133:	if eval("eq(fst,\"goto\")",vs) goto lab134 else lab135;
+
+lab135:	if eval("eq(fst,\"if\")",vs) goto lab136 else lab137;
+
+lab137:	if eval("eq(fst,\"return\")",vs) goto lab138 else lab139;
+
+lab139:	reduced := reduce("\"ERROR\"",vs);
+		code := appendCode(code,"return {reduced};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab113;
+
+lab138:	vs := append(vs,list("exp",eval("head(command)",vs)));
+		reduced := reduce("reduce(exp,vs)",vs);
+		code := appendCode(code,"reduced := {reduced};");
+		reduced := reduce("appendCode(code,\"return {reduced};\")",vs);
+		code := appendCode(code,"code := {reduced};");
+		if eval("eq(bb,list())",vs) goto lab130 else lab131;
+
+lab136:	vs := append(vs,list("exp",eval("head(command)",vs)));
+		vs := append(vs,list("pp0",eval("head(tail(command))",vs)));
+		vs := append(vs,list("pp1",eval("head(tail(tail(command)))",vs)));
+		if eval("isStatic(exp,division)",vs) goto lab140 else lab141;
+
+lab141:	vs := append(vs,list("rest",eval("append(rest,setdiff(pp0,rest))",vs)));
+		vs := append(vs,list("rest",eval("append(rest,setdiff(pp1,rest))",vs)));
+		reduced := reduce("appendPendingUnique(pending,list(pp0,vs),marked,liveVars)",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("appendPendingUnique(pending,list(pp1,vs),marked,liveVars)",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("reduce(exp,vs)",vs);
+		code := appendCode(code,"reduced := {reduced};");
+		reduced := reduce("lookupLabel(pp0,compressState(pp0,vs,liveVars))",vs);
+		code := appendCode(code,"labT := {reduced};");
+		reduced := reduce("lookupLabel(pp1,compressState(pp1,vs,liveVars))",vs);
+		code := appendCode(code,"labF := {reduced};");
+		reduced := reduce("appendCode(code,\"if {reduced} goto {labT} else {labF};\")",vs);
+		code := appendCode(code,"code := {reduced};");
+		if eval("eq(bb,list())",vs) goto lab130 else lab131;
+
+lab140:	pending := appendPendingUnique(pending,list("PP0",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("PP1",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eval(exp,vs)",vs);
+		labT := lookupLabel("PP0",compressState("PP0",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("PP1",compressState("PP1",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab113;
+
+lab134:	vs := append(vs,list("bb",eval("lookup(head(command),program)",vs)));
+		if eval("eq(bb,list())",vs) goto lab130 else lab131;
+
+lab132:	vs := append(vs,list("x",eval("head(command)",vs)));
+		vs := append(vs,list("exp",eval("head(tail(command))",vs)));
+		if eval("isStatic(x,division)",vs) goto lab142 else lab143;
+
+lab143:	reduced := reduce("reduce(exp,vs)",vs);
+		code := appendCode(code,"reduced := {reduced};");
+		reduced := reduce("appendCode(code,\"{x} := {reduced};\")",vs);
+		code := appendCode(code,"code := {reduced};");
+		if eval("eq(bb,list())",vs) goto lab130 else lab131;
+
+lab142:	reduced := reduce("append(vs,list(x,eval(exp,vs)))",vs);
+		code := appendCode(code,"vs := {reduced};");
+		if eval("eq(bb,list())",vs) goto lab130 else lab131;
+
+lab130:	reduced := reduce("append(residual,setdiff(code,residual))",vs);
+		code := appendCode(code,"residual := {reduced};");
+		pending := appendPendingUnique(pending,list("cont1",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("outBody",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eq(pending,list())",vs);
+		labT := lookupLabel("cont1",compressState("cont1",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("outBody",compressState("outBody",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab113;
+
+lab122:	vs := append(vs,list("bb",eval("lookup(pp0,program)",vs)));
+		if eval("eq(bb,list())",vs) goto lab130 else lab131;
+
+lab120:	vs := append(vs,list("command",eval("toList(head(bb))",vs)));
+		vs := append(vs,list("bb",eval("tail(bb)",vs)));
+		vs := append(vs,list("fst",eval("head(command)",vs)));
+		vs := append(vs,list("command",eval("tail(command)",vs)));
+		if eval("eq(fst,\":=\")",vs) goto lab132 else lab133;
+
+lab118:	vs := append(vs,list("pp",eval("nextLabel(pp,program,rest)",vs)));
+		vs := append(vs,list("bb",eval("lookup(pp,program)",vs)));
+		pending := appendPendingUnique(pending,list("innBody",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("lookupPPB",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eq(pp,targetPP)",vs);
+		labT := lookupLabel("innBody",compressState("innBody",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("lookupPPB",compressState("lookupPPB",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab113;
+
+lab116:	reduced := reduce("head(pending)",vs);
+		code := appendCode(code,"current := {reduced};");
+		reduced := reduce("tail(pending)",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("cons(current,marked)",vs);
+		code := appendCode(code,"marked := {reduced};");
+		reduced := reduce("head(current)",vs);
+		code := appendCode(code,"targetPP := {reduced};");
+		vs := append(vs,list("rest",eval("rest",vs)));
+		reduced := reduce("head(tail(current))",vs);
+		code := appendCode(code,"vs := {reduced};");
+		reduced := reduce("initialCode(targetPP,compressState(targetPP,vs,liveVars))",vs);
+		code := appendCode(code,"code := {reduced};");
+		vs := append(vs,list("pp",eval("startPP",vs)));
+		vs := append(vs,list("bb",eval("lookup(pp,program)",vs)));
+		pending := appendPendingUnique(pending,list("innBody",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("lookupPPB",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eq(pp,targetPP)",vs);
+		labT := lookupLabel("innBody",compressState("innBody",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("lookupPPB",compressState("lookupPPB",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab113;
+
+lab114:	reduced := reduce("findProjections(program,division)",vs);
+		code := appendCode(code,"liveVars := {reduced};");
+		vs := append(vs,list("startPP",eval("head(head(toList(program)))",vs)));
+		vs := append(vs,list("rest",eval("list(startPP)",vs)));
+		reduced := reduce("list(list(startPP,vs))",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("list()",vs);
+		code := appendCode(code,"marked := {reduced};");
+		reduced := reduce("list()",vs);
+		code := appendCode(code,"residual := {reduced};");
+		reduced := reduce("head(pending)",vs);
+		code := appendCode(code,"current := {reduced};");
+		reduced := reduce("tail(pending)",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("cons(current,marked)",vs);
+		code := appendCode(code,"marked := {reduced};");
+		reduced := reduce("head(current)",vs);
+		code := appendCode(code,"targetPP := {reduced};");
+		vs := append(vs,list("rest",eval("rest",vs)));
+		reduced := reduce("head(tail(current))",vs);
+		code := appendCode(code,"vs := {reduced};");
+		reduced := reduce("initialCode(targetPP,compressState(targetPP,vs,liveVars))",vs);
+		code := appendCode(code,"code := {reduced};");
+		vs := append(vs,list("pp",eval("startPP",vs)));
+		vs := append(vs,list("bb",eval("lookup(pp,program)",vs)));
+		pending := appendPendingUnique(pending,list("innBody",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("lookupPPB",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eq(pp,targetPP)",vs);
+		labT := lookupLabel("innBody",compressState("innBody",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("lookupPPB",compressState("lookupPPB",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab113;
+
+lab93:	vs := append(vs,list("bb",eval("lookup(pp0,program)",vs)));
+		if eval("eq(bb,list())",vs) goto lab99 else lab100;
+
+lab91:	vs := append(vs,list("command",eval("toList(head(bb))",vs)));
+		vs := append(vs,list("bb",eval("tail(bb)",vs)));
+		vs := append(vs,list("fst",eval("head(command)",vs)));
+		vs := append(vs,list("command",eval("tail(command)",vs)));
+		if eval("eq(fst,\":=\")",vs) goto lab101 else lab102;
+
+lab89:	vs := append(vs,list("pp",eval("nextLabel(pp,program,rest)",vs)));
+		vs := append(vs,list("bb",eval("lookup(pp,program)",vs)));
+		pending := appendPendingUnique(pending,list("innBody",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("lookupPPB",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eq(pp,targetPP)",vs);
+		labT := lookupLabel("innBody",compressState("innBody",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("lookupPPB",compressState("lookupPPB",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab86;
+
+lab87:	reduced := reduce("findProjections(program,division)",vs);
+		code := appendCode(code,"liveVars := {reduced};");
+		vs := append(vs,list("startPP",eval("head(head(toList(program)))",vs)));
+		vs := append(vs,list("rest",eval("list(startPP)",vs)));
+		reduced := reduce("list(list(startPP,vs))",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("list()",vs);
+		code := appendCode(code,"marked := {reduced};");
+		reduced := reduce("list()",vs);
+		code := appendCode(code,"residual := {reduced};");
+		reduced := reduce("head(pending)",vs);
+		code := appendCode(code,"current := {reduced};");
+		reduced := reduce("tail(pending)",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("cons(current,marked)",vs);
+		code := appendCode(code,"marked := {reduced};");
+		reduced := reduce("head(current)",vs);
+		code := appendCode(code,"targetPP := {reduced};");
+		vs := append(vs,list("rest",eval("rest",vs)));
+		reduced := reduce("head(tail(current))",vs);
+		code := appendCode(code,"vs := {reduced};");
+		reduced := reduce("initialCode(targetPP,compressState(targetPP,vs,liveVars))",vs);
+		code := appendCode(code,"code := {reduced};");
+		vs := append(vs,list("pp",eval("startPP",vs)));
+		vs := append(vs,list("bb",eval("lookup(pp,program)",vs)));
+		pending := appendPendingUnique(pending,list("innBody",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("lookupPPB",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eq(pp,targetPP)",vs);
+		labT := lookupLabel("innBody",compressState("innBody",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("lookupPPB",compressState("lookupPPB",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab86;
+
+lab18:	vs := append(vs,list("bb",eval("lookup(head(command),program)",vs)));
+		if eval("eq(bb,list())",vs) goto lab24 else lab25;
+
+lab16:	vs := append(vs,list("x",eval("head(command)",vs)));
+		vs := append(vs,list("exp",eval("head(tail(command))",vs)));
+		if eval("isStatic(x,division)",vs) goto lab144 else lab145;
+
+lab145:	reduced := reduce("reduce(exp,vs)",vs);
+		code := appendCode(code,"reduced := {reduced};");
+		reduced := reduce("appendCode(code,\"{x} := {reduced};\")",vs);
+		code := appendCode(code,"code := {reduced};");
+		if eval("eq(bb,list())",vs) goto lab24 else lab25;
+
+lab144:	reduced := reduce("append(vs,list(x,eval(exp,vs)))",vs);
+		code := appendCode(code,"vs := {reduced};");
+		if eval("eq(bb,list())",vs) goto lab24 else lab25;
+
+lab10:	vs := append(vs,list("pp",eval("nextLabel(pp,program,rest)",vs)));
+		vs := append(vs,list("bb",eval("lookup(pp,program)",vs)));
+		pending := appendPendingUnique(pending,list("innBody",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("lookupPPB",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eq(pp,targetPP)",vs);
+		labT := lookupLabel("innBody",compressState("innBody",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("lookupPPB",compressState("lookupPPB",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab7;
+
+lab8:	reduced := reduce("findProjections(program,division)",vs);
+		code := appendCode(code,"liveVars := {reduced};");
+		vs := append(vs,list("startPP",eval("head(head(toList(program)))",vs)));
+		vs := append(vs,list("rest",eval("list(startPP)",vs)));
+		reduced := reduce("list(list(startPP,vs))",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("list()",vs);
+		code := appendCode(code,"marked := {reduced};");
+		reduced := reduce("list()",vs);
+		code := appendCode(code,"residual := {reduced};");
+		reduced := reduce("head(pending)",vs);
+		code := appendCode(code,"current := {reduced};");
+		reduced := reduce("tail(pending)",vs);
+		code := appendCode(code,"pending := {reduced};");
+		reduced := reduce("cons(current,marked)",vs);
+		code := appendCode(code,"marked := {reduced};");
+		reduced := reduce("head(current)",vs);
+		code := appendCode(code,"targetPP := {reduced};");
+		vs := append(vs,list("rest",eval("rest",vs)));
+		reduced := reduce("head(tail(current))",vs);
+		code := appendCode(code,"vs := {reduced};");
+		reduced := reduce("initialCode(targetPP,compressState(targetPP,vs,liveVars))",vs);
+		code := appendCode(code,"code := {reduced};");
+		vs := append(vs,list("pp",eval("startPP",vs)));
+		vs := append(vs,list("bb",eval("lookup(pp,program)",vs)));
+		pending := appendPendingUnique(pending,list("innBody",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		pending := appendPendingUnique(pending,list("lookupPPB",vs),marked,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set())));
+		reduced := reduce("eq(pp,targetPP)",vs);
+		labT := lookupLabel("innBody",compressState("innBody",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		labF := lookupLabel("lookupPPB",compressState("lookupPPB",vs,map(list("begin",set("program","division")),list("outBody",set("rest","startPP","program")),list("lookupPPB",set("pp","program","rest")),list("innBody",set("bb","division","program","rest")),list("c",set("fst","command","program","division","rest","bb")),list("c0",set("fst","command","division","rest","bb","program")),list("c1",set("fst","command","bb","division","program","rest")),list("error",set()),list("hAssign",set("command","division","bb","program","rest")),list("hAS",set("x","exp","bb","division","program","rest")),list("hAD",set("exp","bb","division","program","rest")),list("hGoto",set("command","program","division","rest")),list("hIf",set("command","division","rest","bb","program")),list("hISA",set("exp")),list("PP0",set("pp0","program","division","rest")),list("PP1",set("pp1","program","division","rest")),list("hIDA",set("rest","pp0","pp1","exp","bb","division","program")),list("hReturn",set("command","bb","division","program","rest")),list("cont2",set()),list("cont1",set()))));
+		code := appendCode(code,"if {reduced} goto {labT} else {labF};");
+		residual := append(residual,setdiff(code,residual));
+		if eq(pending,list()) goto lab5 else lab7;
+

@@ -20,8 +20,10 @@ abstract class ExprGrammar<T> : Grammar<T>() {
             literalToken("list") or
             literalToken("map") or
             literalToken("eq") or
+            literalToken("addToState") or
             literalToken("firstsym") or
             literalToken("newtail") or
+            literalToken("nextLabel") or
             literalToken("lookupLabel") or
             literalToken("lookup") or
             literalToken("initialCode") or
@@ -31,6 +33,7 @@ abstract class ExprGrammar<T> : Grammar<T>() {
             literalToken("setdiff") or
             literalToken("set") or
             literalToken("parse") or
+            literalToken("appendPendingUnique") or
             literalToken("appendCode") or
             literalToken("append") or
             literalToken("findProjections") or
